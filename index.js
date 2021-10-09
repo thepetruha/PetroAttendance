@@ -51,12 +51,15 @@ app.route('/select')
 
 app.route('/update')
     .get(isAunth, async (req, res) => {
-        await Users.findAll()
-        .then((result) => {
-            console.log(result);
-            res.render('update', {allUsers: result});  
+        await Users.findAll({
+            where: {
+                group: '39-02'
+            }
         })
-        //  
+        .then((result) => {
+            console.log(result[0].dataValues.login);
+            res.render('update', {allUsers: result});  
+        });
     });
 //---------------------------------------------------------------------------
 
