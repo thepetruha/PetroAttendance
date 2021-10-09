@@ -1,0 +1,257 @@
+.container{
+    width: 769px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+*{
+    font-family: 'Roboto', sans-serif;
+}
+
+.logo{
+    height: 80px;
+    width: 250px;
+    background-image: url('../img/svg/logo.svg');
+    background-position: center center;
+    background-size: cover;
+    margin: 60px auto 0 auto;
+}
+
+
+.auth{ 
+    margin: 0 auto;
+    display:flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 60px;
+}
+
+.auth h2{
+    font-size: 30px;
+}
+.auth form{
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+}
+
+.auth form input{
+    width: 262px;
+    height: 72px;
+    border: 1px solid lightgray;
+    box-sizing: border-box;
+    border-radius: 50px;
+    margin: 10px 0 10px 0;
+    padding-left: 20px;
+    
+}
+
+.button{
+    background: linear-gradient(180deg, #8EFFE4 0%, #BAFFEE 100%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 50px;
+    width: 255px;
+    height: 60px;
+    transition: .3s;
+    cursor: pointer;
+    padding-left: 0;
+    border: none;
+    font-size: 20px;
+}
+
+.button:hover{
+    background: #2EFFE4;
+}
+
+
+header .group{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+header .group h2{
+    font-size: 48px;
+    margin: 0;
+    margin-top: 20px;
+}
+
+header .group p{
+    font-size: 18px;
+}
+
+section h3{
+    font-size: 30px;
+    text-align: center;
+}
+
+section#menu nav{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+section#menu nav ul{
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    list-style: none;
+    margin: 0 auto;
+
+}
+section#menu nav ul li {
+    background: linear-gradient(180deg, #8EFFE4 0%, #BAFFEE 100%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 50px;   
+    width: 255px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    transition: .3s;
+}
+section#menu nav ul li a{
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: black;
+
+}
+
+section#menu nav ul li:hover {
+
+    background: linear-gradient(180deg, #2EFFE4 0%, #BAFFEE 100%);
+}
+
+.pencil{
+    width: 40px;
+    height: 40px;
+    background-image: url('../img/svg/pencil.svg');
+    margin-right: 10px;
+}
+
+.repencil{
+    width: 40px;
+    height: 40px;
+    background-image: url('../img/svg/repencil.svg');
+    margin-right: 10px;
+}
+
+.eye{
+    width: 40px;
+    height: 40px;
+    background-image: url('../img/svg/eye.svg');
+    margin-right: 10px; 
+}
+
+section#select nav ul{
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+section#select nav ul li{
+    list-style: none;
+    border: 1px solid black;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    transition: .3s;
+    cursor: pointer;
+}
+
+section#select nav ul li:hover{
+    background-color: #8EFFE4;
+}
+
+a.back{
+    display: block;
+    width:68px;
+    height: 57px;
+    background-image: url(../img/svg/back.svg);
+    background-position: center center;
+    background-size: center;
+    align-self: flex-start;
+    transform: translateY(90px);
+}
+
+nav{
+    display: flex;
+    flex-wrap: wrap;
+}
+section#update nav ul.list{
+    height: 100px;
+    width: 100%;
+    font-size: 18px;
+    list-style:none;
+    margin: 0;
+    padding: 0;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+section#update nav ul.list li{
+    height: 200px;
+    font-size: 28px;
+    list-style:none;
+    padding-top: 33px;
+    padding-bottom: 33.4px;
+    padding-left: 190px;
+}
+
+section#update nav ul.checkbox-list{
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+section#update nav ul.checkbox-list li{
+    height: 100px;
+    font-size: 18px;
+    list-style:none;
+    width: 100px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+section#update nav ul.checkbox li{
+
+    list-style:none;
+    border: 1px solid black;
+}
+
+
+
+.otm{
+    width: 50%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+
+section#update .button{
+
+    margin: 0 auto;
+    
+}
