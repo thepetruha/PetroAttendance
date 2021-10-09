@@ -14,14 +14,25 @@
     <header>
         <div class="container">
             <div class="group">
-                <h2>39-03</h2>
-                <p>Четверг 16.09.2021</p>
+                <h2>
+                <% if (group) { %>
+                    <%= group %>
+                <% } %>
+                </h2>
+                <p>
+                    <%- new Date(Date.now()).toUTCString(); %>
+                </p>
             </div>
         </div>
     </header>
     <section id="menu">
         <div class="container">
-            <h3>Доброе время суток,<br>Иван</h3>
+            <h3>Доброе время суток,
+                <% if (name) { %>
+                    <%= name %>
+                <% } %>
+            
+            </h3>
              <nav>
                  <ul>
                      <li><a href="/select" class="btn"><div class="pencil"></div>Заполнить</a>                </li>

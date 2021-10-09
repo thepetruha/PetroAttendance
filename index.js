@@ -15,10 +15,10 @@ app.use(cookieParser());
 app.use('/', login);
 
 //---------------------------------------------------------------------------
-
+var pasport = '';
 function isAunth(req, res, next){
     const cookies = req.cookies;
-    var pasport = '';
+    
     if(cookies){
         jwt.verify(cookies.name, 'petro-college', (err, decoded) => {
             if(decoded !== undefined){
@@ -40,7 +40,7 @@ function isAunth(req, res, next){
 
 app.route('/')
     .get(isAunth, (req, res) => {
-        res.render('menu');
+        res.render('menu', {name: pasport.first_name, group: pasport.group});
     });
 
 app.route('/select')
