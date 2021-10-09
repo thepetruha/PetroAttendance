@@ -52,7 +52,6 @@ app.route('/update')
     .get(isAunth, (req, res) => {
         res.render('update');
     });
-
 //---------------------------------------------------------------------------
 
 sequelize.sync({})

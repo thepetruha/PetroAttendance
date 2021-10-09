@@ -39,6 +39,13 @@ router.route('/login')
         res.render('index');
     });
 
+
+    router.route('/logout')
+    .get(async(req, res) => {
+        res.clearCookie('name');
+        res.redirect('/login');
+    });
+
 //---------------------------------------------------------------------------
 
 module.exports = router
