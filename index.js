@@ -40,7 +40,10 @@ function isAunth(req, res, next){
 
 app.route('/')
     .get(isAunth, (req, res) => {
-        res.render('menu', {name: pasport.first_name, group: pasport.group});
+        res.render('menu', {
+            name: pasport.first_name, 
+            group: pasport.group
+        });
     });
 
 app.route('/select')
