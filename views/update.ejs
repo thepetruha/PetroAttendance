@@ -24,59 +24,28 @@
     <section id="update">
         <div class="container">
             <h3>Выберите количество пар на сегодня:</h3>
-             <nav>
-                 <ul class="list">
-<<<<<<< HEAD
-                     <li>Авдеева</li>
-
-                     <li>Азаренко</li>
-                     <li>Авдеева</li>
-                     <li>Азаренко</li>
-                     <li>Авдеева</li>
-                     <li>Азаренко</li>
-=======
+            <nav>
+                <ul class="list">
                     <% if(allUsers) { %> 
                         <% allUsers.forEach((arr, index) => { %> 
                             <li><%= arr.dataValues.login %></li>
                         <% }); %> 
+                        </div> 
                     <% } %> 
->>>>>>> origin/tonyAntony1
-                 </ul>
-                 <div class="otm">
-                    <ul class="checkbox-list">
-                        <li></li>
-                        <li>Н</li>
-                        <li></li>
-                     </ul>
-                     <ul class="checkbox-list">
-                        <li></li>
-                        <li></li>
-                        <li>У</li>
-                     </ul>
-                     <ul class="checkbox-list">
-                        <li>У</li>
-                        <li></li>
-                        <li></li>
-                     </ul>
-                     <ul class="checkbox-list"> 
-                        <li></li>
-                        <li>Н</li>
-                        <li></li>
-                     </ul>
-                     <ul class="checkbox-list">
-                        <li></li>
-                        <li></li>
-                        <li>У</li>
-                     </ul>
-                     <ul class="checkbox-list">
-                        <li>У</li>
-                        <li></li>
-                        <li></li>
-                     </ul>
-                    </div>
-                    
-             </nav>
-             
+                </ul>
+
+                <div class="otm">
+                    <% if(allUsers) { %> 
+                        <% allUsers.forEach((arr, index) => { %> 
+                            <ul class="checkbox-list">
+                                <li></li>
+                                <li>Н</li>
+                                <li></li>
+                            </ul>
+                        <% }); %>
+                    <% } %> 
+                </div>
+            </nav>
          <button class="button" type="submit">Сохранить</button>
          </div>
     </section>    
