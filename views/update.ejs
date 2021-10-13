@@ -26,6 +26,7 @@
             <h3>Выберите количество пар на сегодня:</h3>
              <nav>
                  <ul class="list">
+<<<<<<< HEAD
                      <li>Авдеева</li>
 
                      <li>Азаренко</li>
@@ -33,6 +34,13 @@
                      <li>Азаренко</li>
                      <li>Авдеева</li>
                      <li>Азаренко</li>
+=======
+                    <% if(allUsers) { %> 
+                        <% allUsers.forEach((arr, index) => { %> 
+                            <li><%= arr.dataValues.login %></li>
+                        <% }); %> 
+                    <% } %> 
+>>>>>>> origin/tonyAntony1
                  </ul>
                  <div class="otm">
                     <ul class="checkbox-list">

@@ -1,4 +1,5 @@
 const express = require('express');
+const { Users } = require('./MeModule/SequelizeModels');
 const { sequelize } = require('./MeModule/ConnectDatabase');
 const login = require('./MeModule/LoginIn');
 const cookieParser = require('cookie-parser');
@@ -52,8 +53,16 @@ app.route('/select')
     });
 
 app.route('/update')
-    .get(isAunth, (req, res) => {
-        res.render('update');
+    .get(isAunth, async (req, res) => {
+        await Users.findAll({
+            where: {
+                group: '39-02'
+            }
+        })
+        .then((result) => {
+            console.log(result[0].dataValues.login);
+            res.render('update', {allUsers: result});  
+        });
     });
 //---------------------------------------------------------------------------
 
