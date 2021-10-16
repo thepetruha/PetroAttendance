@@ -32,6 +32,10 @@ const Attendance = sequelize.define('Attendance', {
         type: DataTypes.DATEONLY,
         allowNull: false
     },
+    idGroup: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     idUser: {
         type: DataTypes.INTEGER,
         allowNull: false
@@ -57,6 +61,11 @@ const Groups = sequelize.define('Groups', {
 
 //---------------------------------------------------------------------------
    
+Attendance.belongsTo(Groups, {
+    foreignKey: 'idGroup', 
+    targetKey: 'id'
+});
+
 Attendance.belongsTo(Users, {
     foreignKey: 'idUser', 
     targetKey: 'id'

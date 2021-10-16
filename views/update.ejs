@@ -31,8 +31,10 @@
                     <ul class="list">
                         <% if(allUsers) { %> 
                             <% allUsers.forEach((arr, index) => { %> 
-                                <li><%= arr.dataValues.first_name %> <%= arr.dataValues.surname %></li>
-                                <script>users['<%- arr.dataValues.id %>'] = {};</script>
+                                <% if ( arr.dataValues.login !== userLogin ) { %> 
+                                    <li><%= arr.dataValues.first_name %> <%= arr.dataValues.surname %></li>
+                                    <script>users['<%- arr.dataValues.id %>'] = {};</script>
+                                <% } %> 
                             <% }); %> 
                         <% } %> 
                     </ul> 
@@ -40,11 +42,13 @@
                     <div class="otm">
                         <% if(allUsers) { %> 
                             <% allUsers.forEach((arr, index) => { %> 
-                                <ul class="checkbox-list" id="list<%- index %>">
-                                    <% for(var i = 0; i < 3; i++) { %>
-                                        <li class="check" id="check<%- i %>"></li>
-                                    <% } %> 
-                                </ul>
+                                <% if ( arr.dataValues.login !== userLogin ) { %> 
+                                    <ul class="checkbox-list" id="list<%- index %>">
+                                        <% for(var i = 0; i < 3; i++) { %>
+                                            <li class="check" id="check<%- i %>"></li>
+                                        <% } %> 
+                                    </ul>
+                                <% } %> 
                             <% }); %>
                         <% } %> 
                         <script>

@@ -32,6 +32,7 @@ router.route('/login')
 
             if(result){
                 const token = jwt.sign({
+                    id: result.id,
                     login: result.login, 
                     password: result.password, 
                     first_name: result.first_name, 

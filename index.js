@@ -55,39 +55,38 @@ app.route('/select')
 
 app.route('/update')
     .get(isAunth, async (req, res) => {
-        var date = new Date().toLocaleDateString('ko-KR');
         var users;
-
         await Attendance.findOne({
             where: { 
-                Date: date,
+                Date: new Date().toLocaleDateString('ko-KR'),
             },
-            include: [{ 
-                model: Users,
-                where: { login: pasport.login },
-                include: [{
-                    model: Groups,
-                    where: { 
-                        Name: pasport.group.realName
-                     } 
-                }]
+            include: [{
+                model: Groups,
+                where: { 
+                    Name: pasport.group.realName 
+                }
             }]
         }).then(async(result) => {
-            console.log('\n' + JSON.stringify(result) + '\n');
-            if(result == null)
-                users = await getUsersGroup();
-            else
-                await setGroupStatus(false);
+            console.log(JSON.stringify(result));
+            
+            if(!result){
+                console.log('На сегоднешней день нет записи')
+                await setGroupStatus(false)
+                .then(async() => {
+                    users = await getUsersGroup();
+                })
+            }else{
+                console.log('На сегоднешней день уже создана запись')
+            }
         });
 
-        await Groups.findOne({
-            where: {
-                Name: pasport.group.realName
-            }
-        }).then((result) => {
+        await getOneUserGroup(pasport.group.realName)
+        .then((result) => {
             console.log(JSON.stringify(result))
+            console.log("GROUP: " + result);
             res.render('update', {
                 allUsers: users,
+                userLogin: pasport.login,
                 group: pasport.group.realName,
                 isDate: result.Status,
             });  
@@ -95,7 +94,6 @@ app.route('/update')
     })
     .post(isAunth, async (req, res) => {
         var data = await req.body; 
-        var date = new Date().toLocaleDateString('ko-KR');
 
         for(var key in data){
             var listJson = {};
@@ -104,7 +102,8 @@ app.route('/update')
             });
 
             await Attendance.create({
-                Date: date,
+                Date: new Date().toLocaleDateString('ko-KR'),
+                idGroup: pasport.group.foreignName,
                 idUser: key,
                 value: listJson
             });
@@ -139,6 +138,19 @@ async function getUsersGroup(){
         all_users = result
     });
     return all_users
+}
+
+async function getOneUserGroup(u){
+    var user;
+    await Groups.findOne({
+        where: {
+            Name: u
+        }
+    }).then((result) => {
+        console.log(JSON.stringify(result))
+        user = u;
+    });
+    return user;
 }
 
 //---------------------------------------------------------------------------
