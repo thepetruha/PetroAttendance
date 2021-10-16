@@ -1,4 +1,4 @@
-const { Users } = require('./SequelizeModels');
+const { Users, Groups } = require('./SequelizeModels');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const express = require('express');
@@ -20,23 +20,35 @@ router.route('/login')
         const loginForm = req.body.login; 
         const passwordForm = req.body.password;
 
-        const users = await Users.findOne({where: {login: loginForm, password: passwordForm}});
-        if(users){
-            const token = jwt.sign({
-                login: users.dataValues.login, 
-                password: users.dataValues.password, 
-                first_name: users.dataValues.first_name, 
-                surname: users.dataValues.surname, 
-                group: users.dataValues.group
-            }, 'petro-college', {expiresIn: 60 * 60});
-            
-            res.cookie('name', token);
-            res.redirect('/');
-        }else{
-            res.redirect('/login');
-        }
+        await Users.findOne({
+            where: {
+                login: loginForm, 
+                password: passwordForm
+            }, include: [{
+                model: Groups
+            }]
+        }).then(result => {
+            console.log(JSON.stringify(result));
 
-        res.render('index');
+            if(result){
+                const token = jwt.sign({
+                    login: result.login, 
+                    password: result.password, 
+                    first_name: result.first_name, 
+                    surname: result.surname, 
+                    group: {
+                        realName: result.Group.Name,
+                        foreignName: result.group,
+                        status: result.Group.Status
+                    }
+                }, 'petro-college', {expiresIn: 60 * 60});
+                
+                res.cookie('name', token);
+                res.redirect('/');
+            }else{
+                res.redirect('/login');
+            }
+        });
     });
 
 

@@ -22,13 +22,51 @@ const Users = sequelize.define('Users', {
         allowNull: false
     },
     group:{
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         allowNull: false
     },
 });
-    
-console.log(Users === sequelize.models.Users);
+
+const Attendance = sequelize.define('Attendance', {
+    Date: {
+        type: DataTypes.DATEONLY,
+        allowNull: false
+    },
+    idUser: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    value:{
+        type: DataTypes.JSON,
+        allowNull: false
+    }
+});
+
+const Groups = sequelize.define('Groups', {
+    Name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    Status: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
+    }
+})
+
+//---------------------------------------------------------------------------
+   
+Attendance.belongsTo(Users, {
+    foreignKey: 'idUser', 
+    targetKey: 'id'
+});
+
+Users.belongsTo(Groups, {
+    foreignKey: 'group', 
+    targetKey: 'id'
+});
 
 //---------------------------------------------------------------------------
 
-module.exports = {Users}
+module.exports = {Users, Attendance, Groups}
