@@ -22,7 +22,7 @@
             </div>
         </div>
     </header>
-    <% if(!isDate) { %> 
+    <% if(isDate) { %> 
         <section id="update">
             <div class="container">
                 <h3>Выберите количество пар на сегодня:</h3>
@@ -119,6 +119,12 @@
                 </script>
             </div>
         </section>    
-    <% } %> 
+    <% } else { %>
+        <section>
+            <div class="container">
+                <h3>На сегодня посещаемость уже создана </h3>
+            </div>
+        </section>
+    <% } %>  
 </body>
 </html>

@@ -85,12 +85,15 @@ app.route('/update')
         .then((result) => {
             console.log(JSON.stringify(result))
             console.log("GROUP: " + result);
-            res.render('update', {
-                allUsers: users,
-                userLogin: pasport.login,
-                group: pasport.group.realName,
-                isDate: result.Status,
-            });  
+            
+            if(result){
+                res.render('update', {
+                    allUsers: users,
+                    userLogin: pasport.login,
+                    group: pasport.group.realName,
+                    isDate: result.Status,
+                });  
+            }
         });
     })
     .post(isAunth, async (req, res) => {
