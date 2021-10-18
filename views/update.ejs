@@ -9,8 +9,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
-
-    <!-- <script type="text/javascript" src="../public/ejs.js"></script> -->
 </head>
 <body>
     <header>
@@ -22,7 +20,7 @@
             </div>
         </div>
     </header>
-    <% if(isDate) { %> 
+    <% if(!isDate) { %> 
         <section id="update">
             <div class="container">
                 <h3>Выберите количество пар на сегодня:</h3>
@@ -38,13 +36,12 @@
                             <% }); %> 
                         <% } %> 
                     </ul> 
-
                     <div class="otm">
                         <% if(allUsers) { %> 
                             <% allUsers.forEach((arr, index) => { %> 
                                 <% if ( arr.dataValues.login !== userLogin ) { %> 
                                     <ul class="checkbox-list" id="list<%- index %>">
-                                        <% for(var i = 0; i < 3; i++) { %>
+                                        <% for(var i = 0; i < numPar; i++) { %>
                                             <li class="check" id="check<%- i %>"></li>
                                         <% } %> 
                                     </ul>
