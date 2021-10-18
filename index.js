@@ -65,8 +65,6 @@ app.route('/update')
             numberPar = req.query.par
         }
 
-        console.log("PAR: " + numberPar + "\n");
-
         var users;
         await Attendance.findOne({
             where: { 
@@ -92,8 +90,11 @@ app.route('/update')
             }
         });
 
-        await getOneUserGroup(pasport.group.realName)
-        .then((result) => {
+        await Groups.findOne({
+            where: {
+                Name: pasport.group.realName
+            }
+        }).then((result) => {
             console.log(JSON.stringify(result))
             if(result){
                 res.render('update', {
@@ -102,7 +103,8 @@ app.route('/update')
                     group: pasport.group.realName,
                     isDate: result.Status,
                     numPar: numberPar
-                });  
+                }); 
+                console.log(result.Status);
             }
         });
     })
@@ -152,19 +154,6 @@ async function getUsersGroup(){
         all_users = result
     });
     return all_users
-}
-
-async function getOneUserGroup(u){
-    var user;
-    await Groups.findOne({
-        where: {
-            Name: u
-        }
-    }).then((result) => {
-        console.log(JSON.stringify(result))
-        user = u;
-    });
-    return user;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
