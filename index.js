@@ -173,6 +173,11 @@ app.route('/update')
     res.redirect('/update');
 })
 
+app.route('/export')
+.get((req, res) => {
+    res.render('export', {})
+})
+
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 async function setGroupStatus(s){
