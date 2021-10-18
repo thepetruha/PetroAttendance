@@ -30,26 +30,22 @@
                     <ul class="list">
                         <% if(allUsers) { %> 
                             <% allUsers.forEach((arr, index) => { %> 
-                                <% if ( arr.dataValues.login !== userLogin ) { %> 
-                                    <div class="flexable">
-                                        <li><%= index %></li>
-                                        <li><%= arr.dataValues.first_name %> <%= arr.dataValues.surname %></li>
-                                    </div>
-                                    <script>users['<%- arr.dataValues.id %>'] = {};</script>
-                                <% } %> 
+                                <div class="flexable">
+                                    <li><%= index + 1 %></li>
+                                    <li><%= arr.dataValues.first_name %> <%= arr.dataValues.surname %></li>
+                                </div>
+                                <script>users['<%- arr.dataValues.id %>'] = {};</script>
                             <% }); %> 
                         <% } %> 
                     </ul> 
                     <div class="otm">
                         <% if(allUsers) { %> 
                             <% allUsers.forEach((arr, index) => { %> 
-                                <% if ( arr.dataValues.login !== userLogin ) { %> 
-                                    <ul class="checkbox-list" id="list<%- index %>">
-                                        <% for(var i = 0; i < numPar; i++) { %>
-                                            <li class="check" id="check<%- i %>"></li>
-                                        <% } %> 
-                                    </ul>
-                                <% } %> 
+                                <ul class="checkbox-list" id="list<%- index %>">
+                                    <% for(var i = 0; i < numPar; i++) { %>
+                                        <li class="check" id="check<%- i %>"></li>
+                                    <% } %> 
+                                </ul>
                             <% }); %>
                         <% } %> 
                         <script>
@@ -73,8 +69,6 @@
                                     console.log(users);
                                 }
                             }
-
-
                             var ch = document.querySelectorAll('.checkbox-list'); 
                             for (let i = 0; i < ch.length; i++) {
                                 ch[i].childNodes.forEach(obj => {
@@ -99,9 +93,9 @@
                 </nav>        
                 <br>     
                 <button class="button" type="submit">Сохранить</button>
-                
             </div>
         </section>    
+        <%- include("blocks/FormationJsonSend.ejs") %>
     <% } else { %>
         <section>
             <div class="container">
@@ -109,25 +103,5 @@
             </div>
         </section>
     <% } %>  
-    <script>
-        var send = document.querySelector('button[type="submit"]');
-        send.addEventListener('click', event => {
-            var data = JSON.stringify(users);
-            console.log(data);
-
-            fetch('http://localhost:4000/update', {
-                method: 'POST', 
-                headers: {
-                    'Content-Type': 'application/json'
-                }, 
-                body: data
-            })
-            .then((result) => {
-                console.log('Datas send!')
-                console.log(result);
-                window.location.reload();
-            })
-        })
-    </script>
 </body>
 </html>

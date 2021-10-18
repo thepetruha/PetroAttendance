@@ -1,0 +1,20 @@
+<script>
+    var send = document.querySelector('button[type="submit"]');
+    send.addEventListener('click', event => {
+        var data = JSON.stringify(users);
+        console.log(data);
+
+        fetch('http://localhost:4000/update', {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            body: data
+        })
+        .then((result) => {
+            console.log('Datas send!')
+            console.log(result);
+            window.location.reload();
+        })
+    })
+</script>

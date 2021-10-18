@@ -21,36 +21,34 @@
             </div>
         </div>
     </header>
-    <% if(!isDate) { %> 
         <section id="update">
             <div class="container">
-                <h3>Выберите количество пар на сегодня:</h3>
+                <h3>Редатирование данный на сегоднешней день:</h3>
                 <nav>
                     <script>var users = {};</script>
                     <ul class="list">
                         <% if(allUsers) { %> 
                             <% allUsers.forEach((arr, index) => { %> 
-                                <% if ( arr.dataValues.login !== userLogin ) { %> 
                                     <div class="flexable">
-                                        <li><%= index %></li>
+                                        <li><%= index + 1 %></li>
                                         <li><%= arr.dataValues.first_name %> <%= arr.dataValues.surname %></li>
                                     </div>
                                     <script>users['<%- arr.dataValues.id %>'] = {};</script>
-                                <% } %> 
                             <% }); %> 
                         <% } %> 
                     </ul> 
                     <div class="otm">
                         <% if(allUsers) { %> 
-                            <% allUsers.forEach((arr, index) => { %> 
-                                <% if ( arr.dataValues.login !== userLogin ) { %> 
-                                    <ul class="checkbox-list" id="list<%- index %>">
-                                        <% for(var i = 0; i < numPar; i++) { %>
-                                            <li class="check" id="check<%- i %>"></li>
-                                        <% } %> 
-                                    </ul>
-                                <% } %> 
-                            <% }); %>
+                            <!-- <% var js = JSON.stringify(checks) %>  -->
+                            <% for(var key2 in checks) { %>
+                                <ul class="checkbox-list" id="list<%- key2 %>">
+                                    <% console.log(checks[key2].dataValues.value) %> 
+                                    <% for(var p in checks[key2].dataValues.value) {%> 
+                                        <% var par = checks[key2].dataValues.value[p] %> 
+                                        <li class="check" id="check<%- key2 %>"><%= par %></li>
+                                    <% } %> 
+                                </ul>
+                            <% } %>
                         <% } %> 
                         <script>
                             function fixValue(){
@@ -99,35 +97,8 @@
                 </nav>        
                 <br>     
                 <button class="button" type="submit">Сохранить</button>
-                
             </div>
-        </section>    
-    <% } else { %>
-        <section>
-            <div class="container">
-                <h3>На сегодня посещаемость уже создана </h3>
-            </div>
-        </section>
-    <% } %>  
-    <script>
-        var send = document.querySelector('button[type="submit"]');
-        send.addEventListener('click', event => {
-            var data = JSON.stringify(users);
-            console.log(data);
-
-            fetch('http://localhost:4000/update', {
-                method: 'POST', 
-                headers: {
-                    'Content-Type': 'application/json'
-                }, 
-                body: data
-            })
-            .then((result) => {
-                console.log('Datas send!')
-                console.log(result);
-                window.location.reload();
-            })
-        })
-    </script>
+        </section>      
+    <%- include("blocks/FormationJsonUpdate.ejs") %>
 </body>
 </html>
