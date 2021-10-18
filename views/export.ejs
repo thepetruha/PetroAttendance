@@ -12,50 +12,7 @@
 
     <button type="button" onclick="generate()">Click to generate document</button>
 
-    <script>
-        const { Document, Packer, Paragraph, Table, TableCell, TableRow } = docx;
-      function generate() {
-
-        const table = new Table({
-            rows: [
-                new TableRow({
-                    children: [
-                        new TableCell({
-                            children: [new Paragraph("Hello")],
-                        }),
-                        new TableCell({
-                            children: [],
-                        }),
-                    ],
-                }),
-                new TableRow({
-                    children: [
-                        new TableCell({
-                            children: [],
-                        }),
-                        new TableCell({
-                            children: [new Paragraph("World")],
-                        }),
-                    ],
-                }),
-            ],
-        });
-
-        const doc = new docx.Document({
-            sections: [{
-                children: [table],
-            }],
-        });
-
-        docx.Packer.toBlob(doc).then(blob => {
-          console.log(blob);
-          saveAs(blob, "example.docx");
-          console.log("Document created successfully");
-        });
-      }
-
-    </script>
-
+    <%- include("blocks/FormationJsonSend.ejs") %>
   </body>
 
 </html>
