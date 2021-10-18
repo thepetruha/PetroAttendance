@@ -56,6 +56,17 @@ app.route('/select')
 
 app.route('/update')
     .get(isAunth, async (req, res) => {
+        var numberPar
+        if(req.query.par < 1) {
+            numberPar = 1;
+        }else if (req.query.par > 6){
+            numberPar = 6;
+        }else{
+            numberPar = req.query.par
+        }
+
+        console.log("PAR: " + numberPar + "\n");
+
         var users;
         await Attendance.findOne({
             where: { 
@@ -69,7 +80,6 @@ app.route('/update')
             }]
         }).then(async(result) => {
             console.log(JSON.stringify(result));
-    
             if(!result){
                 console.log('На сегоднешней день нет записи')
                 await setGroupStatus(false)
@@ -78,20 +88,20 @@ app.route('/update')
                 })
             }else{
                 console.log('На сегоднешней день уже создана запись')
+                await setGroupStatus(true)
             }
         });
 
         await getOneUserGroup(pasport.group.realName)
         .then((result) => {
             console.log(JSON.stringify(result))
-            console.log("GROUP: " + result);
-            
             if(result){
                 res.render('update', {
                     allUsers: users,
                     userLogin: pasport.login,
                     group: pasport.group.realName,
                     isDate: result.Status,
+                    numPar: numberPar
                 });  
             }
         });
