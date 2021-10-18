@@ -59,6 +59,8 @@
     padding-left: 0;
     border: none;
     font-size: 20px;
+    margin: 0 auto;
+    margin-top: 80px;
 }
 
 .button:hover{
@@ -210,12 +212,28 @@ section#update nav ul.list{
 }
 
 section#update nav ul.list li{
-    height: 200px;
+
     font-size: 28px;
     list-style:none;
-    padding-top: 33px;
-    padding-bottom: 33.4px;
-    padding-left: 190px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    
+    padding-left: 10px;
+    flex: 0;
+}
+section#update nav ul.list li:nth-child(2){
+
+    font-size: 28px;
+    list-style:none;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    
+    padding-left: 10px;
+    flex: 1;
+    justify-content: flex-end;
+    padding-right: 20px;
 }
 
 section#update nav ul.checkbox-list{
@@ -232,12 +250,14 @@ section#update nav ul.checkbox-list li{
     display: flex;
     justify-content: center;
     align-items: center;
+    
 }
 
 section#update nav ul.checkbox li{
 
     list-style:none;
     border: 1px solid black;
+    
 }
 
 
@@ -250,8 +270,16 @@ section#update nav ul.checkbox li{
 }
 
 
-section#update .button{
+section#update .container{
 
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     
+}
+
+
+.flexable{
+    display: flex;
+    justify-content: flex-end;
 }

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select - Petro</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
+    
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="group">
+                <a href="/" class="back"></a>
+                <h2><%= group %> </h2>
+                <p><%= new Date().toLocaleString() %></p>
+            </div>
+        </div>
+    </header>
+    <% if(!isDate) { %> 
+        <section id="update">
+            <div class="container">
+                <h3>Выберите количество пар на сегодня:</h3>
+                <nav>
+                    <script>var users = {};</script>
+                    <ul class="list">
+                        <% if(allUsers) { %> 
+                            <% allUsers.forEach((arr, index) => { %> 
+                                <% if ( arr.dataValues.login !== userLogin ) { %> 
+                                    <div class="flexable">
+                                        <li><%= index %></li>
+                                        <li><%= arr.dataValues.first_name %> <%= arr.dataValues.surname %></li>
+                                    </div>
+                                    <script>users['<%- arr.dataValues.id %>'] = {};</script>
+                                <% } %> 
+                            <% }); %> 
+                        <% } %> 
+                    </ul> 
+                    <div class="otm">
+                        <% if(allUsers) { %> 
+                            <% allUsers.forEach((arr, index) => { %> 
+                                <% if ( arr.dataValues.login !== userLogin ) { %> 
+                                    <ul class="checkbox-list" id="list<%- index %>">
+                                        <% for(var i = 0; i < numPar; i++) { %>
+                                            <li class="check" id="check<%- i %>"></li>
+                                        <% } %> 
+                                    </ul>
+                                <% } %> 
+                            <% }); %>
+                        <% } %> 
+                        <script>
+                            function fixValue(){
+                                var params = [];
+                                var list = document.getElementsByClassName('checkbox-list');
+                                for (let i = 0; i < list.length; i++) {
+                                    var text = [];
+                                    list[i].childNodes.forEach(obj => {
+                                        if(obj.innerHTML != undefined){
+                                            text.push(obj.innerHTML);
+                                        }
+                                    });
+                                    params.push(text);
+                                }
+
+                                var iter = 0;
+                                for(key in users){
+                                    users[key] = params[iter]; 
+                                    iter++;
+                                    console.log(users);
+                                }
+                            }
+
+
+                            var ch = document.querySelectorAll('.checkbox-list'); 
+                            for (let i = 0; i < ch.length; i++) {
+                                ch[i].childNodes.forEach(obj => {
+                                    obj.addEventListener('click', event => {
+                                        event.preventDefault();
+                                        console.log(ch[i].id + " : " + obj.id + ":" + obj.innerHTML);
+                                        
+                                        if(obj.innerHTML == ""){
+                                            obj.innerHTML = "H";
+                                        }else if(obj.innerHTML == 'H'){
+                                            obj.innerHTML = "Y";
+                                        }else if(obj.innerHTML == 'Y'){
+                                            obj.innerHTML = "";
+                                        }
+
+                                        fixValue();
+                                    })
+                                });
+                            }
+                        </script>
+                    </div>
+                </nav>        
+                <br>     
+                <button class="button" type="submit">Сохранить</button>
+                
+            </div>
+        </section>    
+    <% } else { %>
+        <section>
+            <div class="container">
+                <h3>На сегодня посещаемость уже создана </h3>
+            </div>
+        </section>
+    <% } %>  
+    <script>
+        var send = document.querySelector('button[type="submit"]');
+        send.addEventListener('click', event => {
+            var data = JSON.stringify(users);
+            console.log(data);
+
+            fetch('http://localhost:4000/update', {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                }, 
+                body: data
+            })
+            .then((result) => {
+                console.log('Datas send!')
+                console.log(result);
+                window.location.reload();
+            })
+        })
+    </script>
+</body>
+</html>

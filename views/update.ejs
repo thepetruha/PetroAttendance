@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
+    
 </head>
 <body>
     <header>
@@ -30,7 +31,10 @@
                         <% if(allUsers) { %> 
                             <% allUsers.forEach((arr, index) => { %> 
                                 <% if ( arr.dataValues.login !== userLogin ) { %> 
-                                    <li><%= arr.dataValues.first_name %> <%= arr.dataValues.surname %></li>
+                                    <div class="flexable">
+                                        <li><%= index %></li>
+                                        <li><%= arr.dataValues.first_name %> <%= arr.dataValues.surname %></li>
+                                    </div>
                                     <script>users['<%- arr.dataValues.id %>'] = {};</script>
                                 <% } %> 
                             <% }); %> 
@@ -92,28 +96,10 @@
                             }
                         </script>
                     </div>
-                </nav>             
+                </nav>        
+                <br>     
                 <button class="button" type="submit">Сохранить</button>
-                <script>
-                    var send = document.querySelector('button[type="submit"]');
-                    send.addEventListener('click', event => {
-                        var data = JSON.stringify(users);
-                        console.log(data);
-
-                        fetch('http://localhost:4000/update', {
-                            method: 'POST', 
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }, 
-                            body: data
-                        })
-                        .then((result) => {
-                            console.log('Datas send!')
-                            console.log(result);
-                            window.location.reload();
-                        })
-                    })
-                </script>
+                
             </div>
         </section>    
     <% } else { %>
@@ -123,5 +109,25 @@
             </div>
         </section>
     <% } %>  
+    <script>
+        var send = document.querySelector('button[type="submit"]');
+        send.addEventListener('click', event => {
+            var data = JSON.stringify(users);
+            console.log(data);
+
+            fetch('http://localhost:4000/update', {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                }, 
+                body: data
+            })
+            .then((result) => {
+                console.log('Datas send!')
+                console.log(result);
+                window.location.reload();
+            })
+        })
+    </script>
 </body>
 </html>

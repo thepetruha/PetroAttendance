@@ -158,7 +158,7 @@ async function getUsersGroup(){
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-sequelize.sync({})
+sequelize.sync({force: true})
 .then(() => {
     app.listen(port, () => {
         console.log(`Start server: ${port}`);
