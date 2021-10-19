@@ -39,142 +39,148 @@ function isAunth(req, res, next){
     }
 }
 
+function isStatus(req, res, next) {
+    console.log(req.originalUrl);
+    if(pasport.status == 'User')
+        res.redirect('/');
+    else if(pasport.status == 'Moderator' && req.originalUrl == '/export')
+        res.redirect('/');
+    next();
+}
+
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 app.route('/')
-    .get(isAunth, (req, res) => {
-        res.render('menu', {
-            name: pasport.first_name, 
-            group: pasport.group.realName,
-            status: pasport.status
-        });
+.get(isAunth, (req, res) => {
+    res.render('menu', {
+        name: pasport.first_name, 
+        group: pasport.group.realName,
+        status: pasport.status
     });
+});
 
 app.route('/select')
-    .get(isAunth, (req, res) => {
-        res.render('select');
-    });
+.get(isAunth, isStatus, (req, res) => {
+    res.render('select');
+});
 
 app.route('/send')
-    .get(isAunth, async (req, res) => {
-        var numberPar
-        if(req.query.par < 1) {
-            numberPar = 1;
-        }else if (req.query.par > 6){
-            numberPar = 6;
-        }else{
-            numberPar = req.query.par
-        }
+.get(isAunth, isStatus, async (req, res) => {
+    var numberPar
+    if(req.query.par < 1) {
+        numberPar = 1;
+    }else if (req.query.par > 6){
+        numberPar = 6;
+    }else{
+        numberPar = req.query.par
+    }
 
-        var users;
-        await Attendance.findOne({
+    var users;
+    await Attendance.findOne({
+        where: { 
+            Date: new Date().toLocaleDateString('ko-KR'),
+        },
+        include: [{
+            model: Groups,
             where: { 
-                Date: new Date().toLocaleDateString('ko-KR'),
-            },
-            include: [{
-                model: Groups,
-                where: { 
-                    Name: pasport.group.realName 
-                }
-            }]
-        }).then(async(result) => {
-            console.log(JSON.stringify(result));
-            if(!result){
-                console.log('На сегоднешней день нет записи')
-                await setGroupStatus(false)
-                .then(async() => {
-                    users = await getUsersGroup();
-                })
-            }else{
-                console.log('На сегоднешней день уже создана запись')
-                await setGroupStatus(true)
+                Name: pasport.group.realName 
             }
-        });
-
-        await Groups.findOne({
-            where: {
-                Name: pasport.group.realName
-            }
-        }).then((result) => {
-            console.log(JSON.stringify(result))
-            if(result){
-                res.render('send', {
-                    allUsers: users,
-                    userLogin: pasport.login,
-                    group: pasport.group.realName,
-                    isDate: result.Status,
-                    numPar: numberPar
-                }); 
-                console.log(result.Status);
-            }
-        });
-    })
-    .post(isAunth, async (req, res) => {
-        var data = await req.body; 
-
-        for(var key in data){
-            var listJson = {};
-            data[key].forEach((value, i) => {
-                listJson['p' + i] = value;
-            });
-
-            await Attendance.create({
-                Date: new Date().toLocaleDateString('ko-KR'),
-                idGroup: pasport.group.foreignName,
-                idUser: key,
-                value: listJson
-            });
+        }]
+    }).then(async(result) => {
+        console.log(JSON.stringify(result));
+        if(!result){
+            console.log('На сегоднешней день нет записи')
+            await setGroupStatus(false)
+            .then(async() => {
+                users = await getUsersGroup();
+            })
+        }else{
+            console.log('На сегоднешней день уже создана запись')
+            await setGroupStatus(true)
         }
-
-        await setGroupStatus(true);
-        res.redirect('/send');
-
     });
 
-  
-    
-    app.route('/update')
-    .get(isAunth, async (req, res) => {
-        var users = await getUsersGroup();
-        await Attendance.findAll({
-            where: {
-                idGroup: pasport.group.foreignName,
-                Date: new Date().toLocaleDateString('ko-KR'),
-            },
-            include: [{
-                model: Users
-            }]
-        }).then((result) => {
-            console.log(JSON.stringify(result));
-            res.render('update', {
+    await Groups.findOne({
+        where: {
+            Name: pasport.group.realName
+        }
+    }).then((result) => {
+        console.log(JSON.stringify(result))
+        if(result){
+            res.render('send', {
                 allUsers: users,
                 userLogin: pasport.login,
                 group: pasport.group.realName,
-                checks: result
+                isDate: result.Status,
+                numPar: numberPar
             }); 
-        });
-    })
-    
-    .post(isAunth, async (req, res) => {
-        var data = await req.body; 
-    
-        for(var key in data){
-            var listJson = {};
-            data[key].forEach((value, i) => {
-                listJson['p' + i] = value;
-            });
-    
-            await Attendance.update({ value: listJson }, {
-                where: {
-                    Date: new Date().toLocaleDateString('ko-KR'),
-                    idGroup: pasport.group.foreignName,
-                    idUser: key,
-                }
-            })
+            console.log(result.Status);
         }
-    
-        res.redirect('/update');
-    })
+    });
+})
+.post(isAunth, isStatus, async (req, res) => {
+    var data = await req.body; 
+
+    for(var key in data){
+        var listJson = {};
+        data[key].forEach((value, i) => {
+            listJson['p' + i] = value;
+        });
+
+        await Attendance.create({
+            Date: new Date().toLocaleDateString('ko-KR'),
+            idGroup: pasport.group.foreignName,
+            idUser: key,
+            value: listJson
+        });
+    }
+
+    await setGroupStatus(true);
+    res.redirect('/send');
+
+});
+
+app.route('/update')
+.get(isAunth, isStatus, async (req, res) => {
+    var users = await getUsersGroup();
+    await Attendance.findAll({
+        where: {
+            idGroup: pasport.group.foreignName,
+            Date: new Date().toLocaleDateString('ko-KR'),
+        },
+        include: [{
+            model: Users
+        }]
+    }).then((result) => {
+        console.log(JSON.stringify(result));
+        res.render('update', {
+            allUsers: users,
+            userLogin: pasport.login,
+            group: pasport.group.realName,
+            checks: result
+        }); 
+    });
+})
+.post(isAunth, isStatus, async (req, res) => {
+    var data = await req.body; 
+
+    for(var key in data){
+        var listJson = {};
+        data[key].forEach((value, i) => {
+            listJson['p' + i] = value;
+        });
+
+        await Attendance.update({ value: listJson }, {
+            where: {
+                Date: new Date().toLocaleDateString('ko-KR'),
+                idGroup: pasport.group.foreignName,
+                idUser: key,
+            }
+        })
+    }
+
+    res.redirect('/update');
+})
 
 app.route('/show')
 .get(isAunth, async (req, res) => {
@@ -199,7 +205,7 @@ app.route('/show')
 });
 
 app.route('/export')
-.get((req, res) => {
+.get(isAunth, isStatus, (req, res) => {
     res.render('export', {})
 })
 
