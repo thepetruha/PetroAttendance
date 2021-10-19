@@ -25,6 +25,11 @@ const Users = sequelize.define('Users', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    status:{
+        type: DataTypes.STRING(40),
+        allowNull: false,
+        defaultValue: "User"
+    }
 });
 
 const Attendance = sequelize.define('Attendance', {

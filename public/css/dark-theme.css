@@ -1,0 +1,17 @@
+*{
+    color: white;
+}
+
+body{
+    background-color: #1f1f1f;
+}
+
+body .container input{
+    color: white;
+    background-color: #1f1f1f;
+    border: 1px solid white;
+}
+
+.container a.btn p{
+    color: black;
+}

@@ -45,7 +45,8 @@ app.route('/')
     .get(isAunth, (req, res) => {
         res.render('menu', {
             name: pasport.first_name, 
-            group: pasport.group.realName
+            group: pasport.group.realName,
+            status: pasport.status
         });
     });
 
@@ -130,7 +131,52 @@ app.route('/send')
 
     });
 
-app.route('/update')
+  
+    
+    app.route('/update')
+    .get(isAunth, async (req, res) => {
+        var users = await getUsersGroup();
+        await Attendance.findAll({
+            where: {
+                idGroup: pasport.group.foreignName,
+                Date: new Date().toLocaleDateString('ko-KR'),
+            },
+            include: [{
+                model: Users
+            }]
+        }).then((result) => {
+            console.log(JSON.stringify(result));
+            res.render('update', {
+                allUsers: users,
+                userLogin: pasport.login,
+                group: pasport.group.realName,
+                checks: result
+            }); 
+        });
+    })
+    
+    .post(isAunth, async (req, res) => {
+        var data = await req.body; 
+    
+        for(var key in data){
+            var listJson = {};
+            data[key].forEach((value, i) => {
+                listJson['p' + i] = value;
+            });
+    
+            await Attendance.update({ value: listJson }, {
+                where: {
+                    Date: new Date().toLocaleDateString('ko-KR'),
+                    idGroup: pasport.group.foreignName,
+                    idUser: key,
+                }
+            })
+        }
+    
+        res.redirect('/update');
+    })
+
+app.route('/show')
 .get(isAunth, async (req, res) => {
     var users = await getUsersGroup();
     await Attendance.findAll({
@@ -143,35 +189,14 @@ app.route('/update')
         }]
     }).then((result) => {
         console.log(JSON.stringify(result));
-        res.render('update', {
+        res.render('show', {
             allUsers: users,
             userLogin: pasport.login,
             group: pasport.group.realName,
             checks: result
         }); 
     });
-})
-
-.post(isAunth, async (req, res) => {
-    var data = await req.body; 
-
-    for(var key in data){
-        var listJson = {};
-        data[key].forEach((value, i) => {
-            listJson['p' + i] = value;
-        });
-
-        await Attendance.update({ value: listJson }, {
-            where: {
-                Date: new Date().toLocaleDateString('ko-KR'),
-                idGroup: pasport.group.foreignName,
-                idUser: key,
-            }
-        })
-    }
-
-    res.redirect('/update');
-})
+});
 
 app.route('/export')
 .get((req, res) => {
