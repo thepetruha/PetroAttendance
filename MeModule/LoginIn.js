@@ -41,7 +41,8 @@ router.route('/login')
                         realName: result.Group.Name,
                         foreignName: result.group,
                         status: result.Group.Status
-                    }
+                    },
+                    status: result.status
                 }, 'petro-college', {expiresIn: 60 * 60});
                 
                 res.cookie('name', token);

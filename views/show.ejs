@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("blocks/Head.ejs") %>   
+    
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="group">
+                <a href="/" class="back"></a>
+                <h2><%= group %> </h2>
+                <p><%= new Date().toLocaleString() %></p>
+            </div>
+        </div>
+    </header>
+        <section id="update">
+            <div class="container">
+                <h3>Редатирование данный на сегоднешней день:</h3>
+                <nav>
+                    <script>var users = {};</script>
+                    <ul class="list">
+                        <% if(allUsers) { %> 
+                            <% allUsers.forEach((arr, index) => { %> 
+                                    <div class="flexable">
+                                        <li><%= index + 1 %></li>
+                                        <li><%= arr.dataValues.first_name %> <%= arr.dataValues.surname %></li>
+                                    </div>
+                                    <script>users['<%- arr.dataValues.id %>'] = {};</script>
+                            <% }); %> 
+                        <% } %> 
+                    </ul> 
+                    <div class="otm">
+                        <% if(allUsers) { %> 
+                            <!-- <% var js = JSON.stringify(checks) %>  -->
+                            <% for(var key2 in checks) { %>
+                                <ul class="checkbox-list" id="list<%- key2 %>">
+                                    <% console.log(checks[key2].dataValues.value) %> 
+                                    <% for(var p in checks[key2].dataValues.value) {%> 
+                                        <% var par = checks[key2].dataValues.value[p] %> 
+                                        <li class="check" id="check<%- key2 %>"><%= par %></li>
+                                    <% } %> 
+                                </ul>
+                            <% } %>
+                        <% } %> 
+                        
+                    </div>
+                </nav>        
+                <br>     
+            </div>
+        </section>      
+</body>
+</html>

@@ -1,4 +1,12 @@
 <script>
+    
+    var date = document.getElementById('date');
+    var documentName = date.value
+   
+    date.addEventListener('change', function(){
+        documentName = this.value;
+    });
+
     const { Document, Packer, Paragraph, Table, TableCell, TableRow } = docx;
   function generate() {
 
@@ -35,7 +43,7 @@
 
     docx.Packer.toBlob(doc).then(blob => {
       console.log(blob);
-      saveAs(blob, "example.docx");
+      saveAs(blob, documentName + "_group.docx");
       console.log("Document created successfully");
     });
   }
