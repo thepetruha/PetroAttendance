@@ -205,8 +205,37 @@ app.route('/show')
 });
 
 app.route('/export')
-.get(isAunth, isStatus, (req, res) => {
-    res.render('export', {})
+.get(isAunth, isStatus, async (req, res) => {
+    await Groups.findAll({})
+    .then(result => {
+        console.log(JSON.stringify(result));
+        res.render('export', {
+            group: result
+        })
+    })
+    .catch(err => console.log(err))
+})
+.post(isAunth, isStatus, async (req, res) => {
+    var data = req.body;
+    console.log(data);
+
+    await Attendance.findAll({
+        where: {
+            Date: data.dateWrite,
+            idGroup: +data.groupSelect
+        }, 
+        include: [{
+            model: Users,
+            where: {
+                group: +data.groupSelect
+            }
+        }]
+    })
+    .then(result => {
+        console.log(JSON.stringify(result));    
+        res.send(result);
+    })
+    .catch(err => console.log(err))
 })
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -1,51 +1,84 @@
 <script>
-    
+    var dataJSON = {};
     var date = document.getElementById('date');
+    var groupSelect = document.getElementById('GropSelect');
+
+
     var documentName = date.value
-   
     date.addEventListener('change', function(){
         documentName = this.value;
     });
+    var documentSelect = groupSelect.value;
+    groupSelect.addEventListener('change', function(){
+        documentSelect = this.value;
+    })
 
-    const { Document, Packer, Paragraph, Table, TableCell, TableRow } = docx;
-  function generate() {
+    const { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType} = docx;
+    function generate() {
+        dataJSON = {
+            dateWrite: documentName,
+            groupSelect: documentSelect, 
+        };    
+        var tableRowArr = [];
+        var jsDate = JSON.stringify(dataJSON);
 
-    const table = new Table({
-        rows: [
-            new TableRow({
-                children: [
-                    new TableCell({
-                        children: [new Paragraph("Hello")],
-                    }),
-                    new TableCell({
-                        children: [],
-                    }),
-                ],
-            }),
-            new TableRow({
-                children: [
-                    new TableCell({
-                        children: [],
-                    }),
-                    new TableCell({
-                        children: [new Paragraph("World")],
-                    }),
-                ],
-            }),
-        ],
-    });
+        fetch('http://localhost:4000/export', {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            body: jsDate
+        }).then(result => {
+            result.json()
+            .then((datas) => {
+                console.log(datas);
+                //эту функцию вывода желательно не трограть
+                datas.forEach((obj, index) => {
+                    var tableColArr = [];
+                    tableColArr.push(
+                        new TableCell({
+                            children: [new Paragraph(`${index + 1}`)],
+                        }),
+                        new TableCell({
+                            children: [new Paragraph(`${obj.User.first_name} ${obj.User.surname}`)],
+                        })
+                    )
+                    for(var key in obj.value){
+                        tableColArr.push(
+                            new TableCell({
+                                children: [new Paragraph(`${obj.value[key]}`)],
+                            })
+                        )
+                    }
+                    tableRowArr.push(
+                        new TableRow({
+                            children: tableColArr,
+                        })
+                    )
+                });
 
-    const doc = new docx.Document({
-        sections: [{
-            children: [table],
-        }],
-    });
+                const table = new Table({
+                    rows: tableRowArr,
+                    width: { 
+                        size: 100, 
+                        type: WidthType.AUTO, 
+                    }, 
+                    columnWidths: [1000, 3000, 1000, 1000, 1000, 1000, 1000, 10000], 
+                });
 
-    docx.Packer.toBlob(doc).then(blob => {
-      console.log(blob);
-      saveAs(blob, documentName + "_group.docx");
-      console.log("Document created successfully");
-    });
-  }
+                const doc = new docx.Document({
+                    sections: [{
+                        children: [table],
+                    }],
+                });
+
+                docx.Packer.toBlob(doc).then(blob => {
+                    console.log(blob);
+                    saveAs(blob, documentName + "_group.docx");
+                    console.log("Document created successfully");
+                });
+            })   
+        })
+    }
 
 </script>
