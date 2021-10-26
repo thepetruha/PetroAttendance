@@ -18,10 +18,11 @@
         dataJSON = {
             dateWrite: documentName,
             groupSelect: documentSelect, 
+            nameGroup: groupSelect.options[groupSelect.selectedIndex].text
         };    
         var tableRowArr = [];
         var jsDate = JSON.stringify(dataJSON);
-
+        console.log(jsDate)
         fetch('http://localhost:4000/export', {
             method: 'POST', 
             headers: {
@@ -31,52 +32,7 @@
         }).then(result => {
             result.json()
             .then((datas) => {
-                console.log(datas);
-                //эту функцию вывода желательно не трограть
-                datas.forEach((obj, index) => {
-                    var tableColArr = [];
-                    tableColArr.push(
-                        new TableCell({
-                            children: [new Paragraph(`${index + 1}`)],
-                        }),
-                        new TableCell({
-                            children: [new Paragraph(`${obj.User.first_name} ${obj.User.surname}`)],
-                        })
-                    )
-                    for(var key in obj.value){
-                        tableColArr.push(
-                            new TableCell({
-                                children: [new Paragraph(`${obj.value[key]}`)],
-                            })
-                        )
-                    }
-                    tableRowArr.push(
-                        new TableRow({
-                            children: tableColArr,
-                        })
-                    )
-                });
-
-                const table = new Table({
-                    rows: tableRowArr,
-                    width: { 
-                        size: 100, 
-                        type: WidthType.AUTO, 
-                    }, 
-                    columnWidths: [1000, 3000, 1000, 1000, 1000, 1000, 1000, 10000], 
-                });
-
-                const doc = new docx.Document({
-                    sections: [{
-                        children: [table],
-                    }],
-                });
-
-                docx.Packer.toBlob(doc).then(blob => {
-                    console.log(blob);
-                    saveAs(blob, documentName + "_group.docx");
-                    console.log("Document created successfully");
-                });
+                //
             })   
         })
     }

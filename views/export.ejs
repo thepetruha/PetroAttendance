@@ -25,7 +25,8 @@
     <section id="export">
         <div class="container">
             <h3>Выберите дату посещаемости:</h3>
-            <input id="date" type="date" min="2021-10-18" max="2021-10-23" value="2021-10-23">
+            <input id="date" type="date" value="2021-10-23">
+            <!-- <input id="date" type="date" value="2021-10-23"> -->
             <select id="GropSelect">
                 <% for(var key in group) { %> 
                     <option value="<%- group[key].id %>"><%= group[key].Name %></option>
@@ -34,10 +35,7 @@
             <a href="#" class="btn" onclick="generate()"><div class="export"></div><p>Экспортировать</p></a>
         </div>
     </section>
-    
-
     <%- include("blocks/WordExport.ejs") %>   
   </body>
-
 </html>
 
