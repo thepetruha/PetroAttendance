@@ -226,10 +226,9 @@ app.route('/export')
     var valDOCX;
     var data = req.body;
     console.log(data);
-
+    var file;
 
     await Attendance.findAll({
-
         where: {
             Date: {
                 [Op.between]: [data.dateWriteFirst, data.dateWriteSecond],
@@ -245,7 +244,6 @@ app.route('/export')
     })
     .then(async result => {
         await console.log(JSON.stringify(result));    
-        await res.send(result);
 
         var array = [];
         var dates = {
@@ -338,9 +336,6 @@ app.route('/export')
             valDOCX += `<td align="center" valign="center" >${count_H}</td>`;
             
             userDOCX += `<tr id="${key}"><td>${user_json[key].name}</td>${valDOCX}</tr>`;
-            
-            console.log(userDOCX);
-            console.log(valDOCX);
             
         }         
 
@@ -446,15 +441,23 @@ app.route('/export')
         </html>`
         console.log(userDOCX);
         var content = await htmlDocx.asBlob(DOCX, {orientation: 'landscape', margins: {left: 100, top: 100, right: 100}});
+        
         await fs.writeFileSync("index.docx", content, (error, data) => {
             if(error) throw error;
             console.log("GOOD!")
         })
-
+    })
+    .then(() => {
+        res.json({file: '/Users/petrkrivosekov/Documents/PetroAttendance/'})
     })
     .catch(err => console.log(err))
 })
 
+app.route('/Users/petrkrivosekov/Documents/PetroAttendance/index.docx')
+.get(isAunth, isStatus, (req, res) => {
+    var pathname = '/Users/petrkrivosekov/Documents/PetroAttendance/index.docx'
+    res.download(pathname, 'index.docx');
+})
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 async function setGroupStatus(s){

@@ -46,9 +46,12 @@
         }).then(result => {
             result.json()
             .then((datas) => {
-                //
+                console.log(datas)
+                let text = JSON.stringify(datas);
             })   
         })
+
+        document.getElementById('link').classList.add('show');
     }
 
 </script>
