@@ -1,13 +1,26 @@
 <script>
     var dataJSON = {};
-    var date = document.getElementById('date');
+    var date1 = document.getElementById('date1');
+    var date2 = document.getElementById('date2');
     var groupSelect = document.getElementById('GropSelect');
 
 
-    var documentName = date.value
-    date.addEventListener('change', function(){
-        documentName = this.value;
+    var documentName1 = date1.value;
+    var documentName2 = date2.value;
+    var thisDate;
+    
+
+    date1.addEventListener('change', function(e){
+        documentName1 = this.value;
     });
+
+    date2.addEventListener('change', function(e){
+        documentName2 = this.value;
+    });
+
+    
+
+    
     var documentSelect = groupSelect.value;
     groupSelect.addEventListener('change', function(){
         documentSelect = this.value;
@@ -16,7 +29,8 @@
     const { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType} = docx;
     function generate() {
         dataJSON = {
-            dateWrite: documentName,
+            dateWriteFirst: documentName1,
+            dateWriteSecond: documentName2,
             groupSelect: documentSelect, 
             nameGroup: groupSelect.options[groupSelect.selectedIndex].text
         };    

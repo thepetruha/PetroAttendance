@@ -227,10 +227,12 @@ app.route('/export')
     var data = req.body;
     console.log(data);
 
+
     await Attendance.findAll({
+
         where: {
             Date: {
-                [Op.between]: [new Date().toLocaleDateString('ko-KR'), data.dateWrite],
+                [Op.between]: [data.dateWriteFirst, data.dateWriteSecond],
             },
             idGroup: +data.groupSelect
         }, 
@@ -246,7 +248,9 @@ app.route('/export')
         await res.send(result);
 
         var array = [];
+        var dates = {
 
+        };
         //формирование нормального объекта json
         await result.forEach((obj, index) => {            
             array.push({
@@ -255,8 +259,10 @@ app.route('/export')
                 Date: obj.dataValues.Date,
                 dataVal: obj.dataValues.value
             })
+            dates[obj.dataValues.Date] = {};
+            
         })
-
+        console.log(dates);
         //сортировка пользователей по возрастанию
         var s = array.sort(function(a, b) {
             if (a.idUser > b.idUser) {
@@ -324,15 +330,29 @@ app.route('/export')
             }
             
             arr_par.forEach(val =>{
-                valDOCX += `<td width="100" align="center" valign="center" >${val}</td>`
+                valDOCX += `<td width="100" align="center" valign="center" >${val}</td>`;
             })
 
-            valDOCX += `<td align="center" valign="center" >${count_H}</td>`
-            valDOCX += `<td align="center" valign="center" >${count_Y}</td>`
-
-            userDOCX += `<tr id="${key}"> <td>${user_json[key].name}</td> ${valDOCX}</tr>`
+            
+            valDOCX += `<td align="center" valign="center" >${count_Y}</td>`;
+            valDOCX += `<td align="center" valign="center" >${count_H}</td>`;
+            
+            userDOCX += `<tr id="${key}"><td>${user_json[key].name}</td>${valDOCX}</tr>`;
+            
+            console.log(userDOCX);
+            console.log(valDOCX);
+            
         }         
 
+        var dateZanatya = `<td>Дата занятий</td>`;
+        for (const key in dates) {
+            dateZanatya+= `<td colspan="5" align="center" valign="center">`;
+            dateZanatya+= new Date(key).toLocaleDateString("ru-RU");
+            dateZanatya+=`</td>`;
+            
+        }
+
+        var options = { month: 'long', year: 'numeric' };
         var DOCX = `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -343,8 +363,8 @@ app.route('/export')
         </head>
         <body>
         <style>
-        body{
-        
+        table {
+            font-family: "Times New Roman", Times, serif !important;
         }
         table{
         border-collapse: collapse;
@@ -368,9 +388,9 @@ app.route('/export')
         </p>
         <table>
         <tr>
-        <td width="20%" align="center"><h1>группа №${data.nameGroup}</h1></td>
-        <td colspan="30" width="60%" align="center" valign="bottom">Посещение занятий студентами с ${new Date().toLocaleDateString('ru-RU')}. по ${ new Date(data.dateWrite).toLocaleDateString('ru-RU')}.</td>
-        <td colspan="2" align="center" width="20%"><h1>Октябрь, 2021</h1></td>
+        <td width="20%" align="center"><h2>группа №${data.nameGroup}</h2></td>
+        <td colspan="30" width="60%" align="center" valign="bottom">Посещение занятий студентами с ${new Date(data.dateWriteFirst).toLocaleDateString('ru-RU')}. по ${new Date(data.dateWriteSecond).toLocaleDateString('ru-RU')}.</td>
+        <td colspan="2" align="center" width="20%"><h2>${new Date(data.dateWriteFirst).toLocaleDateString('ru-RU', options)}</h2></td>
         </tr>
         <tr>
         <td>Дни недели</td>
@@ -383,7 +403,7 @@ app.route('/export')
         <td align="center" colspan="2">Всего пропусков</td>
         </tr>
         <tr id="data-zan">
-        <!— Заполняем циклом —>
+        ${dateZanatya}
         </tr>
         <tr>
         <td height="150">Наименование дисциплины</td>
@@ -422,23 +442,9 @@ app.route('/export')
         </tr>
            ${userDOCX}
         </table>
-        <script>
-        var dateZan = document.getElementById("data-zan");
-
-        function exploitDate(){
-
-        dateZan.innerHTML="<td>Дата занятий</td>";
-        for (var i = 0; i<6; i++){
-        dateZan.innerHTML += "<td colspan='5' align='center'>0"+(i+1)+".06.2021" +"</td>";
-        }
-
-        }
-
-        exploitDate();
-        </script>
         </body>
         </html>`
-
+        console.log(userDOCX);
         var content = await htmlDocx.asBlob(DOCX, {orientation: 'landscape', margins: {left: 100, top: 100, right: 100}});
         await fs.writeFileSync("index.docx", content, (error, data) => {
             if(error) throw error;
