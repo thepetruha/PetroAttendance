@@ -4,13 +4,13 @@
         var data = JSON.stringify(users);
         console.log(data);
 
-        fetch('http://localhost:4000/update', {
+        fetch("http://" + document.location.host +'/update', {
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json'
             }, 
             body: data
-        })
+        })  
         .then((result) => {
             console.log('Datas send!')
             console.log(result);

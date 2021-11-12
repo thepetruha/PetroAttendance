@@ -37,7 +37,7 @@
         var tableRowArr = [];
         var jsDate = JSON.stringify(dataJSON);
         console.log(jsDate)
-        fetch('http://localhost:4000/export', {
+        fetch('http://' + document.location.host + '/export', {
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json'

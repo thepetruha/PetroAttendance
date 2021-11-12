@@ -4,7 +4,7 @@
         var data = JSON.stringify(users);
         console.log(data);
 
-        fetch('http://localhost:4000/send', {
+        fetch('http://' + document.location.host +'/send', {
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json'

@@ -32,11 +32,10 @@
         var box = document.getElementsByClassName("box");
         for(let key in box){
             if(box[key].innerHTML != undefined){
-                // console.log(box[key].innerHTML); 
                 box[key].addEventListener('click', event => {
                     console.log(box[key].innerHTML);
                     let par = +(box[key].innerHTML)
-                    window.location.replace(`http://localhost:4000/send?par=${par}`);
+                    window.location.replace("http://" + document.location.host + '/send?par=' + par);
                 })
             }
         }
