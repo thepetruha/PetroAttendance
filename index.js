@@ -2,8 +2,7 @@ const { Users, Attendance, Groups} = require('./MeModule/SequelizeModels');
 const { sequelize } = require('./MeModule/ConnectDatabase');
 const { Op } = require("sequelize");
 const login = require('./MeModule/LoginIn');
-const exp = require('./MeModule/ExportFile.js')
-
+const exp = require('./MeModule/ExportFile.js');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const htmlDocx = require('html-docx-js');
@@ -12,7 +11,7 @@ const fs = require('fs');
 
 const app = express();
 const port = 4000;
-
+//const xlsx = require('node-xlsx');
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 app.set('view engine', 'ejs');
@@ -21,17 +20,15 @@ app.use(cookieParser());
 app.use(express.json());
 app.use('/', login);
 app.use('/', exp)
-
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-
 var pasport;
+/* =============  ПРОВЕРКА НА АВТОРИЗАЦИЮ ЧЕРЕЗ КУКИ ====================*/
 function isAunth(req, res, next){
-    const cookies = req.cookies;
-    
+    const cookies = req.cookies;   
     if(cookies){
         jwt.verify(cookies.name, 'petro-college', (err, decoded) => {
             if(decoded !== undefined){
-                console.log(decoded) // bar
+                //console.log(decoded) // bar
                 pasport = decoded;
                 next();
             }else{
@@ -44,18 +41,17 @@ function isAunth(req, res, next){
         res.redirect('/login');
     }
 }
-
+/* =============  ФУНКЦИЯ ПРОВЕРКИ НА СТАТУС ПОЛЬЗОВАТЕЛЯ (АДМИН, МОДЕРАТОР И ОБЫЧНЫЙ ПОЛЬЗОВАТЕЛЬ)====================*/
 function isStatus(req, res, next) {
-    console.log(req.originalUrl);
+    //console.log(req.originalUrl);
     if(pasport.status == 'User')
         res.redirect('/');
     else if(pasport.status == 'Moderator' && req.originalUrl == '/export')
         res.redirect('/');
     next();
 }
-
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-
+/* =============  ГЛАВНОЕ МЕНЮ ====================*/
 app.route('/')
 .get(isAunth, (req, res) => {
     res.render('menu', {
@@ -64,12 +60,12 @@ app.route('/')
         status: pasport.status
     });
 });
-
+/* =============  ВЫБОР КОЛИЧЕСТВА ПАР НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
 app.route('/select')
 .get(isAunth, isStatus, (req, res) => {
     res.render('select');
 });
-
+/* ============= СОЗДАНИЕ ПОСЕЩАЕМОСТИ НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
 app.route('/send')
 .get(isAunth, isStatus, async (req, res) => {
     var numberPar
@@ -93,7 +89,7 @@ app.route('/send')
             }
         }]
     }).then(async(result) => {
-        console.log(JSON.stringify(result));
+        //console.log(JSON.stringify(result));
         if(!result){
             console.log('На сегоднешней день нет записи')
             await setGroupStatus(false)
@@ -131,7 +127,7 @@ app.route('/send')
         var listJson = {};
         data[key].forEach((value, i) => {
             listJson['p' + i] = value;
-        });
+        });f
 
         await Attendance.create({
             Date: new Date().toLocaleDateString('ko-KR'),
@@ -145,7 +141,7 @@ app.route('/send')
     res.redirect('/send');
 
 });
-
+/* =============  РЕДАКТИРОВАНИЕ ПОСЕЩЯЕМОСТИ НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
 app.route('/update')
 .get(isAunth, isStatus, async (req, res) => {
     var users = await getUsersGroup();
@@ -187,7 +183,7 @@ app.route('/update')
 
     res.redirect('/update');
 })
-
+/* =============  ПРОСМОТР ПОСЕЩАЕМОСТИ НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
 app.route('/show')
 .get(isAunth, async (req, res) => {
     var users = await getUsersGroup();
@@ -209,7 +205,27 @@ app.route('/show')
         }); 
     });
 });
-
+/* =============  ИМПОРТ НОВЫХ СТУДЕНТОВ ИЗ EXCEL ФАЙЛА ====================*/
+const urlencodedParser = express.urlencoded({extended: false});
+app.route('/import')
+.get(isAunth, isStatus, async (req, res) => {
+    console.log(req.body);
+    /*const workSheetsFromFile = xlsx.parse(`${__dirname}/group.xlsx`);
+        workSheetsFromFile.forEach(obj => {
+            console.log(obj.data);
+            for (var i = 0; i <= obj.data.length; i++){
+                console.log(obj.data[i]);
+            }
+        });*/
+    res.render('import');
+    
+})
+.post(isAunth,urlencodedParser, isStatus, async (request, response) => {
+    if(!request.body) return response.sendStatus(400);
+    console.log(request.body);
+    response.send(`${request.body.groupName} - ${request.body.importFile}`);
+});
+/* =============  ЭКСПОРТ ПОСЕЩАЕМОСТИ В WORD ДОКУМЕНТ ====================*/
 app.route('/export')
 .get(isAunth, isStatus, async (req, res) => {
     await Groups.findAll({})
@@ -235,6 +251,9 @@ app.route('/export')
             },
             idGroup: +data.groupSelect
         }, 
+        order: [
+            ['Date', 'ASC']
+        ],
         include: [{
             model: Users,
             where: {
@@ -302,19 +321,21 @@ app.route('/export')
             }
         })
 
-        console.log(user_json)
+        //console.log(user_json)
         for(var key in user_json){
             var count_H = 0;
             var count_Y = 0;
             var arr_par = [];
+            var params;
             valDOCX = '';
-
+            
             for(var key2 in user_json[key].dateValues){
                 var i = 0;
+                
                 for(var item in user_json[key].dateValues[key2]){
                     arr_par.push(user_json[key].dateValues[key2][item])
 
-                    var params = user_json[key].dateValues[key2][item];
+                    params = user_json[key].dateValues[key2][item];
                     if(params == 'H'){
                         count_H++;
                     }else if(params == 'Y'){
@@ -339,7 +360,7 @@ app.route('/export')
             
         }         
 
-        var dateZanatya = `<td>Дата занятий</td>`;
+        var dateZanatya = `<td class="border-left">Дата занятий</td>`;
         for (const key in dates) {
             dateZanatya+= `<td colspan="5" align="center" valign="center">`;
             dateZanatya+= new Date(key).toLocaleDateString("ru-RU");
@@ -358,21 +379,30 @@ app.route('/export')
         </head>
         <body>
         <style>
-        table {
-            font-family: "Times New Roman", Times, serif !important;
+        .border-top{
+            border-top: 5px solid black;
+        }
+        .border-left{
+            border-left: 5px solid black;
+        }
+        .border-bottom{
+            border-bottom: 5px solid black;
+        }
+        .border-right{
+            border-right:  5px solid black;
         }
         table{
-        border-collapse: collapse;
-        height: 1140px;
-        width: 1054px;
+            margin-top: 40px;
+            border-collapse: collapse;
+            height: 1140px;
+            width: 900px;
+            margin-left: 70px;
         }
-        tr{
-        border: 1px solid black;
+        #main td{
+            border: 1px solid black
         }
-        td{
-        border: 1px solid black;
+        #main tr{ border: 1px solid black }
 
-        }
         </style>
 
         <div class="header">
@@ -381,15 +411,15 @@ app.route('/export')
         <p>
 
         </p>
-        <table>
+        <table id="main">
         <tr>
-        <td width="20%" align="center"><h2>группа №${data.nameGroup}</h2></td>
-        <td colspan="30" width="60%" align="center" valign="bottom">Посещение занятий студентами с ${new Date(data.dateWriteFirst).toLocaleDateString('ru-RU')}. по ${new Date(data.dateWriteSecond).toLocaleDateString('ru-RU')}.</td>
-        <td colspan="2" align="center" width="20%"><h2>${new Date(data.dateWriteFirst).toLocaleDateString('ru-RU', options)}</h2></td>
+        <td width="18%" align="center"><h2>группа №${data.nameGroup}</h2></td>
+        <td colspan="30" width="52%" align="center" valign="bottom">Посещение занятий студентами с ${new Date(data.dateWriteFirst).toLocaleDateString('ru-RU')}. по ${new Date(data.dateWriteSecond).toLocaleDateString('ru-RU')}.</td>
+        <td colspan="2" align="center" width="18%"><h2>${new Date(data.dateWriteFirst).toLocaleDateString('ru-RU', options)}</h2></td>
         </tr>
         <tr>
-        <td>Дни недели</td>
-        <td align="center" colspan="5" width="10%">Понедельник</td>
+        <td class="border-top border-left">Дни недели</td>
+        <td align="center" colspan="5" width="10%" class="border-left border-right">Понедельник</td>
         <td align="center" colspan="5" width="10%">Вторник</td>
         <td align="center" colspan="5" width="10%">Среда</td>
         <td align="center" colspan="5" width="10%">Четверг</td>
@@ -399,6 +429,7 @@ app.route('/export')
         </tr>
         <tr id="data-zan">
         ${dateZanatya}
+        <td colspan="2"></td>
         </tr>
         <tr>
         <td height="150">Наименование дисциплины</td>
@@ -436,40 +467,47 @@ app.route('/export')
         <td>По неуважительным причинам (кол-во часов)</td>
         </tr>
            ${userDOCX}
+        <tr>
+        
+        </tr>
+        </table>
+        <table>
+            <td align="center">
+                Куратор _________   ______________
+            </td>
+            <td align="center">
+                Староста _________   ______________
+            </td>
         </table>
         </body>
         </html>`
-        console.log(userDOCX);
+        //console.log(userDOCX);
         var content = await htmlDocx.asBlob(DOCX, {orientation: 'landscape', margins: {left: 100, top: 100, right: 100}});
         
         await fs.writeFileSync("index.docx", content, (error, data) => {
             if(error) throw error;
-            console.log("GOOD!")
+            //console.log("GOOD!")
         })
-    })
-    .then(() => {
-        res.json({file: '/Users/petrkrivosekov/Documents/PetroAttendance/'})
     })
     .catch(err => console.log(err))
 })
-
-app.route('/Users/petrkrivosekov/Documents/PetroAttendance/index.docx')
-.get(isAunth, isStatus, (req, res) => {
-    var pathname = '/Users/petrkrivosekov/Documents/PetroAttendance/index.docx'
-    res.download(pathname, 'index.docx');
-})
+/* =============  СКАЧИВАНИЕ СФОРМИРОВАННОГО WORD ДОКУМЕНТА ====================*/
+app.get('/download', function(req, res){
+    const file = `${__dirname}/index.docx`;
+    res.download(file); // 
+  });
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-
+/* =============  НЕ ЗНАЮ, ПЕТР. ЧТО ЭТО ? ====================*/
 async function setGroupStatus(s){
     await Groups.update({ Status: s }, {
         where: {
             Name: pasport.group.realName
         }
     }).then((result) => {
-        console.log(JSON.stringify(result));
+        //console.log(JSON.stringify(result));
     });
 }
-
+/* =============  ПОЛУЧЕНИЕ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ С УКАЗАННОЙ ГРУППОЙ ====================*/
 async function getUsersGroup(){
     var all_users;
     await Users.findAll({
@@ -478,14 +516,13 @@ async function getUsersGroup(){
             model: Groups
         }]
     }).then((result) => {
-        console.log(JSON.stringify(result));
+        //console.log(JSON.stringify(result));
         all_users = result
     });
     return all_users
 }
-
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-
+/* =============  ЗАПУСК СЕРВЕРА ====================*/
 sequelize.sync({})
 .then(() => {
     app.listen(port, () => {
