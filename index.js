@@ -489,11 +489,10 @@ app.route('/export')
         </body>
         </html>`
         //console.log(userDOCX);
-        var content = await htmlDocx.asBlob(DOCX, {orientation: 'landscape', margins: {left: 100, top: 100, right: 100}});
+        var content = htmlDocx.asBlob(DOCX, {orientation: 'landscape', margins: {left: 100, top: 100, right: 100}});
         
-        await fs.writeFileSync("index.docx", content, (error, data) => {
+        fs.writeFileSync("index.docx", content, (error, data) => {
             if(error) throw error;
-            //console.log("GOOD!")
         })
     })
     .catch(err => console.log(err))

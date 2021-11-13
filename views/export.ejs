@@ -8,7 +8,6 @@
   </head>
 
   <body>
-
     <header>
         <div class="container">
             <div class="group">
@@ -21,6 +20,13 @@
             </div>
         </div>
     </header>
+    <div class="popup-bg">
+        <div class="popup">
+            <div class="close" onclick="closeopen();">X</div>
+            <h2>Посещаемость успешно экспортирована!</h2>
+            <a href="/download" class="btn"><div class="export"></div><p>Скачать</p></a>
+        </div>
+    </div>
 
     <section id="export">
         <div class="container">
@@ -33,7 +39,6 @@
                 <% } %> 
             </select>
             <a href="#" class="btn" onclick="generate()"><div class="export"></div><p>Экспортировать</p></a>
-            <a href="/download" class="btn" id="link"><div class="export"></div><p>Скачать</p></a>
         </div>
     </section>
     <%- include("blocks/WordExport.ejs") %>   

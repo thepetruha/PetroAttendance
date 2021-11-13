@@ -3,13 +3,16 @@
     var date1 = document.getElementById('date1');
     var date2 = document.getElementById('date2');
     var groupSelect = document.getElementById('GropSelect');
-
+    var popup = document.querySelector('.popup-bg');
 
     var documentName1 = date1.value;
     var documentName2 = date2.value;
     var thisDate;
     
-
+    function closeopen(){
+       popup.classList.toggle('show');
+    }
+    
     date1.addEventListener('change', function(e){
         documentName1 = this.value;
     });
@@ -51,7 +54,12 @@
             })   
         })
 
-        document.getElementById('link').classList.add('show');
+        
+        closeopen();
+        
     }
+
+    
+    
 
 </script>
