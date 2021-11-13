@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include("blocks/Head.ejs") %>   
-    
+    <%- include("blocks/Head.ejs") %> 
 </head>
 <body>
     <header>
@@ -14,9 +13,10 @@
             </div>
         </div>
     </header>
+    <% if(isDate) { %>
         <section id="update">
             <div class="container">
-                <h3>Редактирование данных на сегодня:</h3>
+                <h3>Данные на сегодня:</h3>
                 <nav>
                     <script>var users = {};</script>
                     <ul class="list">
@@ -49,5 +49,13 @@
                 <br>     
             </div>
         </section>      
+        <% } else { %>
+            <section>
+                <div class="container">
+                    <h3>На сегодня посещаемости не найдено. </h3>
+                    <a href="/" class="btn">Вернуться</a>
+                </div>
+            </section>
+        <% } %>  
 </body>
 </html>

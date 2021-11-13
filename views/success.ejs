@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("blocks/Head.ejs") %> 
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="group">
+                <a href="/" class="back"></a>
+                <h2><%= group %> </h2>
+                <p><%= new Date().toLocaleString() %></p>
+            </div>
+        </div>
+    </header>
+    <section>
+        <div class="container">
+            <h3>Посещаемость успешно создана </h3>
+            <a href="/" class="btn">Вернуться</a>
+        </div>
+    </section>
+</body>
+</html>

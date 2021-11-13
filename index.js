@@ -62,8 +62,12 @@ app.route('/')
 });
 /* =============  ВЫБОР КОЛИЧЕСТВА ПАР НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
 app.route('/select')
-.get(isAunth, isStatus, (req, res) => {
-    res.render('select');
+.get(isAunth, isStatus, async (req, res) => {
+    isDates = await getIsDate();
+    res.render('select', {
+        isDate: isDates,
+        group: pasport.group.realName,
+    }); 
 });
 /* ============= СОЗДАНИЕ ПОСЕЩАЕМОСТИ НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
 app.route('/send')
@@ -76,7 +80,6 @@ app.route('/send')
     }else{
         numberPar = req.query.par
     }
-
     var users;
     await Attendance.findOne({
         where: { 
@@ -101,7 +104,6 @@ app.route('/send')
             await setGroupStatus(true)
         }
     });
-
     await Groups.findOne({
         where: {
             Name: pasport.group.realName
@@ -109,7 +111,7 @@ app.route('/send')
     }).then((result) => {
         console.log(JSON.stringify(result))
         if(result){
-            res.render('send', {
+            res.render('send',  {
                 allUsers: users,
                 userLogin: pasport.login,
                 group: pasport.group.realName,
@@ -127,7 +129,7 @@ app.route('/send')
         var listJson = {};
         data[key].forEach((value, i) => {
             listJson['p' + i] = value;
-        });f
+        });
 
         await Attendance.create({
             Date: new Date().toLocaleDateString('ko-KR'),
@@ -138,7 +140,7 @@ app.route('/send')
     }
 
     await setGroupStatus(true);
-    res.redirect('/send');
+    res.redirect('/success');
 
 });
 /* =============  РЕДАКТИРОВАНИЕ ПОСЕЩЯЕМОСТИ НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
@@ -153,13 +155,16 @@ app.route('/update')
         include: [{
             model: Users
         }]
-    }).then((result) => {
+    }).then(async (result) => {
         console.log(JSON.stringify(result));
+        isDates = await getIsDate();
+        
         res.render('update', {
             allUsers: users,
             userLogin: pasport.login,
             group: pasport.group.realName,
-            checks: result
+            checks: result,
+            isDate: isDates
         }); 
     });
 })
@@ -195,13 +200,15 @@ app.route('/show')
         include: [{
             model: Users
         }]
-    }).then((result) => {
-        console.log(JSON.stringify(result));
+    }).then(async (result) => {
+        //console.log(JSON.stringify(result));
+        isDates = await getIsDate();
         res.render('show', {
             allUsers: users,
             userLogin: pasport.login,
             group: pasport.group.realName,
-            checks: result
+            checks: result,
+            isDate: isDates
         }); 
     });
 });
@@ -520,6 +527,21 @@ async function getUsersGroup(){
         all_users = result
     });
     return all_users
+}
+/* =============  ПРОВЕРКА НА СОЗДАННОСТЬ ПОСЕЩЕНИЙ ====================*/
+async function getIsDate(){
+    var isDate;
+    
+    await Groups.findOne({
+        where: {
+            Name: pasport.group.realName
+        }
+    }).then((result) => {
+        isDate = result.Status;
+        
+    });
+   
+    return isDate;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 /* =============  ЗАПУСК СЕРВЕРА ====================*/

@@ -8,11 +8,12 @@
         <div class="container">
             <div class="group">
                 <a href="/" class="back"></a>
-                <h2>39-03</h2>
-                <p>Четверг 16.09.2021</p>
+                <h2><%= group %> </h2>
+                <p><%= new Date().toLocaleString() %></p>
             </div>
         </div>
     </header>
+    <% if(!isDate){    %>
     <section id="select">
         <div class="container">
             <h3>Выберите количество пар на сегодня:</h3>
@@ -40,5 +41,13 @@
             }
         }
     </script>
+    <% } else {  %>
+        <section id="update">
+            <div class="container">
+                <h3>На сегодня посещаемость уже заполнена </h3>
+                <a href="/" class="btn">Вернуться</a>
+            </div>
+        </section>
+    <% } %>
 </body>
 </html>

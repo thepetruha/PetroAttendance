@@ -14,11 +14,13 @@
             </div>
         </div>
     </header>
+    <% if(isDate) { %> 
         <section id="update">
             <div class="container">
                 <h3>Редактирование данных на сегодня:</h3>
+                
                 <nav>
-                    <script>var users = {};</script>
+                    <script>    var users = {}; </script>
                     <ul class="list">
                         <% if(allUsers) { %> 
                             <% allUsers.forEach((arr, index) => { %> 
@@ -91,7 +93,15 @@
                 <br>     
                 <button class="button" type="submit">Сохранить</button>
             </div>
-        </section>      
+        </section>    
+        <% } else { %>
+            <section id="update">
+                <div class="container">
+                    <h3>На сегодня посещаемости не найдено. </h3>
+                    <a href="/select" class="btn">Заполнить посещаемость</a>
+                </div>
+            </section>
+        <% } %>    
     <%- include("blocks/FormationJsonUpdate.ejs") %>
 </body>
 </html>
