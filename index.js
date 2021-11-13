@@ -109,7 +109,7 @@ app.route('/send')
             Name: pasport.group.realName
         }
     }).then((result) => {
-        console.log(JSON.stringify(result))
+        //console.log(JSON.stringify(result))
         if(result){
             res.render('send',  {
                 allUsers: users,
@@ -118,19 +118,19 @@ app.route('/send')
                 isDate: result.Status,
                 numPar: numberPar
             }); 
-            console.log(result.Status);
+           //console.log(result.Status);
         }
     });
 })
 .post(isAunth, isStatus, async (req, res) => {
-    var data = await req.body; 
+    var data = req.body; 
 
     for(var key in data){
         var listJson = {};
         data[key].forEach((value, i) => {
             listJson['p' + i] = value;
         });
-
+ы
         await Attendance.create({
             Date: new Date().toLocaleDateString('ko-KR'),
             idGroup: pasport.group.foreignName,
@@ -140,7 +140,7 @@ app.route('/send')
     }
 
     await setGroupStatus(true);
-    res.redirect('/success');
+    await res.redirect('/success');
 
 });
 /* =============  РЕДАКТИРОВАНИЕ ПОСЕЩЯЕМОСТИ НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
@@ -156,7 +156,7 @@ app.route('/update')
             model: Users
         }]
     }).then(async (result) => {
-        console.log(JSON.stringify(result));
+       // console.log(JSON.stringify(result));
         isDates = await getIsDate();
         
         res.render('update', {
@@ -168,8 +168,9 @@ app.route('/update')
         }); 
     });
 })
-.post(isAunth, isStatus, async (req, res) => {
-    var data = await req.body; 
+.post(isAunth, isStatus, (req, res) => {
+    var data = req.body; 
+    console.log("DATA KEYSSS ")
 
     for(var key in data){
         var listJson = {};
@@ -177,7 +178,7 @@ app.route('/update')
             listJson['p' + i] = value;
         });
 
-        await Attendance.update({ value: listJson }, {
+        Attendance.update({ value: listJson }, {
             where: {
                 Date: new Date().toLocaleDateString('ko-KR'),
                 idGroup: pasport.group.foreignName,
@@ -185,8 +186,8 @@ app.route('/update')
             }
         })
     }
-
-    res.redirect('/update');
+    console.log('REDIRECTED');
+    res.redirect('/success');
 })
 /* =============  ПРОСМОТР ПОСЕЩАЕМОСТИ НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
 app.route('/show')
@@ -216,7 +217,7 @@ app.route('/show')
 const urlencodedParser = express.urlencoded({extended: false});
 app.route('/import')
 .get(isAunth, isStatus, async (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
     /*const workSheetsFromFile = xlsx.parse(`${__dirname}/group.xlsx`);
         workSheetsFromFile.forEach(obj => {
             console.log(obj.data);
@@ -229,7 +230,7 @@ app.route('/import')
 })
 .post(isAunth,urlencodedParser, isStatus, async (request, response) => {
     if(!request.body) return response.sendStatus(400);
-    console.log(request.body);
+    //console.log(request.body);
     response.send(`${request.body.groupName} - ${request.body.importFile}`);
 });
 /* =============  ЭКСПОРТ ПОСЕЩАЕМОСТИ В WORD ДОКУМЕНТ ====================*/
@@ -237,7 +238,7 @@ app.route('/export')
 .get(isAunth, isStatus, async (req, res) => {
     await Groups.findAll({})
     .then(result => {
-        console.log(JSON.stringify(result));
+        //console.log(JSON.stringify(result));
         res.render('export', {
             group: result
         })
@@ -248,7 +249,7 @@ app.route('/export')
     var userDOCX;
     var valDOCX;
     var data = req.body;
-    console.log(data);
+    //console.log(data);
     var file;
 
     await Attendance.findAll({
@@ -269,7 +270,7 @@ app.route('/export')
         }]
     })
     .then(async result => {
-        await console.log(JSON.stringify(result));    
+       // await console.log(JSON.stringify(result));    
 
         var array = [];
         var dates = {
@@ -286,7 +287,7 @@ app.route('/export')
             dates[obj.dataValues.Date] = {};
             
         })
-        console.log(dates);
+        //console.log(dates);
         //сортировка пользователей по возрастанию
         var s = array.sort(function(a, b) {
             if (a.idUser > b.idUser) {
