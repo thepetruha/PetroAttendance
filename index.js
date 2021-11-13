@@ -60,6 +60,7 @@ app.route('/')
         status: pasport.status
     });
 });
+
 /* =============  ВЫБОР КОЛИЧЕСТВА ПАР НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
 app.route('/select')
 .get(isAunth, isStatus, async (req, res) => {
@@ -69,6 +70,7 @@ app.route('/select')
         group: pasport.group.realName,
     }); 
 });
+
 /* ============= СОЗДАНИЕ ПОСЕЩАЕМОСТИ НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
 app.route('/send')
 .get(isAunth, isStatus, async (req, res) => {
@@ -124,13 +126,15 @@ app.route('/send')
 })
 .post(isAunth, isStatus, async (req, res) => {
     var data = req.body; 
+    console.log("DDDDD")
+    console.log(data)
 
     for(var key in data){
         var listJson = {};
         data[key].forEach((value, i) => {
             listJson['p' + i] = value;
         });
-ы
+
         await Attendance.create({
             Date: new Date().toLocaleDateString('ko-KR'),
             idGroup: pasport.group.foreignName,
@@ -139,8 +143,9 @@ app.route('/send')
         });
     }
 
-    await setGroupStatus(true);
-    await res.redirect('/success');
+    await setGroupStatus(true).then(() => {
+        res.redirect('/success');
+    })
 
 });
 /* =============  РЕДАКТИРОВАНИЕ ПОСЕЩЯЕМОСТИ НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
@@ -168,8 +173,10 @@ app.route('/update')
         }); 
     });
 })
-.post(isAunth, isStatus, (req, res) => {
+.post(isAunth, isStatus, async (req, res) => {
     var data = req.body; 
+    console.log('------------------------------------------------------------------- ^')
+    console.log(data)
     console.log("DATA KEYSSS ")
 
     for(var key in data){
@@ -178,7 +185,7 @@ app.route('/update')
             listJson['p' + i] = value;
         });
 
-        Attendance.update({ value: listJson }, {
+        await Attendance.update({ value: listJson }, {
             where: {
                 Date: new Date().toLocaleDateString('ko-KR'),
                 idGroup: pasport.group.foreignName,
@@ -186,8 +193,16 @@ app.route('/update')
             }
         })
     }
+    
     console.log('REDIRECTED');
-    res.redirect('/success');
+    res.redirect(302, '/success');
+})
+
+app.route('/success')
+.get(isAunth, isStatus, (req, res) => {
+    res.render('success', {
+        group: pasport.group.realName
+    });
 })
 /* =============  ПРОСМОТР ПОСЕЩАЕМОСТИ НА СЕГОДНЯШНИЙ ДЕНЬ ====================*/
 app.route('/show')

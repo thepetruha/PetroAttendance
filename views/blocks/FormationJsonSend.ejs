@@ -1,7 +1,8 @@
 <script>
     var send = document.querySelector('button[type="submit"]');
+    var data = JSON.stringify(users);
     send.addEventListener('click', event => {
-        var data = JSON.stringify(users);
+        data = JSON.stringify(users);
         console.log(data);
 
         fetch('/send', {
@@ -12,9 +13,8 @@
             body: data
         })
         .then((result) => {
-            console.log('Datas send!')
-            console.log(result);
-            window.location.reload();
+            console.log(result)
+            window.location.assign(result.url);
         })
     })
 </script>
