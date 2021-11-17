@@ -48,7 +48,7 @@ router.route('/login')
                 res.cookie('name', token);
                 res.redirect('/');
             }else{
-                res.redirect('/login');
+                res.redirect('/login-error');
             }
         });
     });
@@ -58,6 +58,11 @@ router.route('/login')
     .get((req, res) => {
         res.clearCookie('name');
         res.redirect('/login');
+    });
+
+    router.route('/login-error')
+    .get((req, res) => {
+        res.render('loginError');
     });
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
