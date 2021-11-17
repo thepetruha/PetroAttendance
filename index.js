@@ -32,12 +32,12 @@ function isAunth(req, res, next){
                 pasport = decoded;
                 next();
             }else{
-                console.log('Not authorized!');
+                console.log('Не авторизован!');
                 res.redirect('/login');
             }
         });
     }else{
-        console.log('Not cookies!');
+        console.log('Не принес печеньки...');
         res.redirect('/login');
     }
 }
@@ -96,13 +96,13 @@ app.route('/send')
     }).then(async(result) => {
         //console.log(JSON.stringify(result));
         if(!result){
-            console.log('На сегоднешней день нет записи')
+            //console.log('На сегодня нет записи')
             await setGroupStatus(false)
             .then(async() => {
                 users = await getUsersGroup();
             })
         }else{
-            console.log('На сегоднешней день уже создана запись')
+            //console.log('На сегоднешней день уже создана запись')
             await setGroupStatus(true)
         }
     });
@@ -126,8 +126,7 @@ app.route('/send')
 })
 .post(isAunth, isStatus, async (req, res) => {
     var data = req.body; 
-    console.log("DDDDD")
-    console.log(data)
+    //console.log(data)
 
     for(var key in data){
         var listJson = {};
@@ -175,9 +174,9 @@ app.route('/update')
 })
 .post(isAunth, isStatus, async (req, res) => {
     var data = req.body; 
-    console.log('------------------------------------------------------------------- ^')
-    console.log(data)
-    console.log("DATA KEYSSS ")
+    //console.log('------------------------------------------------------------------- ^')
+    //console.log(data)
+    //console.log("DATA KEYSSS ")
 
     for(var key in data){
         var listJson = {};
@@ -194,7 +193,7 @@ app.route('/update')
         })
     }
     
-    console.log('REDIRECTED');
+    //console.log('REDIRECTED');
     res.redirect(302, '/success');
 })
 
@@ -253,7 +252,9 @@ app.route('/export')
 .get(isAunth, isStatus, async (req, res) => {
     await Groups.findAll({})
     .then(result => {
+        //console.log("======== ВСЕ ГРУППЫ ================================");
         //console.log(JSON.stringify(result));
+        //console.log("____________________________________________________");
         res.render('export', {
             group: result
         })
@@ -263,8 +264,14 @@ app.route('/export')
 .post(isAunth, isStatus, async (req, res) => {
     var userDOCX;
     var valDOCX;
+    var beforeDays = "";
+    var afterDays = "";
+    var dateZanatya = ``;
     var data = req.body;
-    //console.log(data);
+    console.log("======== ДАННЫЕ СО СТРАНИЦЕ ПРИ ЭКСПОРТЕ ===============================");
+    
+    console.log(data);
+    console.log("_______________________________________________");
     var file;
 
     await Attendance.findAll({
@@ -285,25 +292,33 @@ app.route('/export')
         }]
     })
     .then(async result => {
-       // await console.log(JSON.stringify(result));    
-
+        //console.log("======== КАКОЙ ПРИХОДИТ РЕЗУЛЬТАТ ================================");
+        //console.log(JSON.stringify(result));    
+        //console.log("__________________________________________________________________");
         var array = [];
         var dates = {
 
         };
         //формирование нормального объекта json
-        await result.forEach((obj, index) => {            
+        result.forEach((obj, index) => {            
+            
+        //console.log("=================OBJ USER FIRST NAME============" );
+        //console.log(obj.User.first_name);
             array.push({
                 idUser: obj.User.id,
                 name: `${obj.User.first_name} ${obj.User.surname}`,
                 Date: obj.dataValues.Date,
                 dataVal: obj.dataValues.value
             })
+    
             dates[obj.dataValues.Date] = {};
             
         })
+        
+        //console.log("======== DATES ================================");
         //console.log(dates);
         //сортировка пользователей по возрастанию
+        var s = array;
         var s = array.sort(function(a, b) {
             if (a.idUser > b.idUser) {
                 return 1;
@@ -313,37 +328,121 @@ app.route('/export')
             }
             return 0;
         })
-   
+        
+        //console.log("======== МАССИВ s ================================");
+        //console.log(s);
+
         var user_json = {}; 
         s.forEach(obj => {
             user_json[obj.idUser] = {};
+            
+           
         })
+        //console.log("========OBJ USER ================================");
+        //console.log(user_json);
+
+
+
+
+
+
+
+/* ЗАПОЛНЯЕМ ПУСТЫЕ КЛЕТОЧКИ ДО И ПОСЛЕ Н-ОК*/
+        var firstDay = new Date(data.dateWriteFirst).getDay(); // день недели первой выбранной даты: 3 - среда и тд
+        var lastDay = new Date(data.dateWriteSecond).getDay();
+        var dayCount = 5; //Количество пар в день максимально 
+        var beforeDateZanyatya = '';
+        var afterDateZanyatya = '';
+        if (firstDay>1){ // Если первый день недели больше понедельника, то вперед вставляем пустые клетки
+                for(var i = 1; i<firstDay; i++){
+                    for(var j = 0; j<dayCount; j++){
+                    beforeDays += `<td width="100" align="center" valign="center" ></td>`;
+                }
+                beforeDateZanyatya+=`<td colspan="5" width="100" align="center" valign="center" ></td>`;
+            }
+            
+        }
+        if (lastDay<7){ // Если второй день недели меньше субботы, то в конец добавляем пустые клетки
+            for(var i = 1; i<7-lastDay; i++){
+                for(var j = 0; j<dayCount; j++){
+                    afterDays += `<td width="100" align="center" valign="center" ></td>`;
+                }
+                afterDateZanyatya+=`<td colspan="5" width="100" align="center" valign="center" ></td>`;
+
+            }
+        }
+
+
+        dateZanatya = `<td>Дата занятий</td>`+ beforeDateZanyatya;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         var iterate = 0;
         var arr_date = {};
+        var check = lastDay-firstDay+1;
+        //console.log("=========CHECK============");
+       // console.log(check);
+        //console.log("===================obj===========");
+        //console.log(user_json);
         s.forEach(obj => {
             for(var key in user_json){
                 if(obj.idUser == key){
                     arr_date[obj.Date] = obj.dataVal;
+                    
+                   // console.log("KEY");
+                   // console.log(arr_date[obj.Date] == obj.dataVal);
                 }else{
+                    //console.log(arr_date[obj.Date] == obj.dataVal);
                     continue;
+                    
                 }
                 iterate++;
 
-                if(iterate == 6){
+                if(iterate == check){
                     user_json[obj.idUser] = {
                         name: obj.name,
                         dateValues: arr_date
                     }
+                    //console.log("======== ARR_DATE ================================");
+                    //console.log(user_json[key].dateValues)
+                     iterate = 0;
 
-                    // console.log(user_json[key].dateValues)
-                    iterate = 0;
+                    //console.log(arr_date);
                     arr_date = {}
                     break;
                 }
             }
-        })
+        });
 
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        //console.log("======== USER_JSON ================================");
         //console.log(user_json)
         for(var key in user_json){
             var count_H = 0;
@@ -351,7 +450,8 @@ app.route('/export')
             var arr_par = [];
             var params;
             valDOCX = '';
-            
+            //console.log("============USER JSON KEY==========");
+            //console.log(user_json[key]);
             for(var key2 in user_json[key].dateValues){
                 var i = 0;
                 
@@ -371,25 +471,30 @@ app.route('/export')
                 }
             }
             
+            valDOCX += beforeDays;
+            
+            
             arr_par.forEach(val =>{
                 valDOCX += `<td width="100" align="center" valign="center" >${val}</td>`;
             })
-
-            
+            valDOCX += afterDays;
             valDOCX += `<td align="center" valign="center" >${count_Y}</td>`;
             valDOCX += `<td align="center" valign="center" >${count_H}</td>`;
             
             userDOCX += `<tr id="${key}"><td>${user_json[key].name}</td>${valDOCX}</tr>`;
+            //console.log("=========ARR_PAR======================");
+            //console.log(arr_par);
             
         }         
-
-        var dateZanatya = `<td class="border-left">Дата занятий</td>`;
+        
+        
         for (const key in dates) {
             dateZanatya+= `<td colspan="5" align="center" valign="center">`;
             dateZanatya+= new Date(key).toLocaleDateString("ru-RU");
             dateZanatya+=`</td>`;
             
         }
+        
 
         var options = { month: 'long', year: 'numeric' };
         var DOCX = `<!DOCTYPE html>
@@ -427,7 +532,7 @@ app.route('/export')
         #main tr{ border: 1px solid black }
 
         </style>
-
+        <font size="5" color="red" face="Times New Roman">
         <div class="header">
 
         </div>
@@ -451,7 +556,7 @@ app.route('/export')
         <td align="center" colspan="2">Всего пропусков</td>
         </tr>
         <tr id="data-zan">
-        ${dateZanatya}
+        ${dateZanatya + afterDateZanyatya}
         <td colspan="2"></td>
         </tr>
         <tr>
@@ -503,6 +608,7 @@ app.route('/export')
             </td>
         </table>
         </body>
+        </font>
         </html>`
         //console.log(userDOCX);
         var content = htmlDocx.asBlob(DOCX, {orientation: 'landscape', margins: {left: 100, top: 100, right: 100}});

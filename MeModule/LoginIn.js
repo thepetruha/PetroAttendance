@@ -28,7 +28,7 @@ router.route('/login')
                 model: Groups
             }]
         }).then(result => {
-            console.log(JSON.stringify(result));
+            //console.log(JSON.stringify(result));
 
             if(result){
                 const token = jwt.sign({
