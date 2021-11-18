@@ -89,7 +89,7 @@ app.route('/send')
         },
         include: [{
             model: Groups,
-            where: { 
+            where: {
                 Name: pasport.group.realName 
             }
         }]
@@ -459,9 +459,9 @@ app.route('/export')
                     arr_par.push(user_json[key].dateValues[key2][item])
 
                     params = user_json[key].dateValues[key2][item];
-                    if(params == 'H'){
+                    if(params == 'Н'){
                         count_H++;
-                    }else if(params == 'Y'){
+                    }else if(params == 'У'){
                         count_Y++;
                     }
                     i++;
@@ -542,25 +542,27 @@ app.route('/export')
         <table id="main">
         <tr>
         <td width="18%" align="center"><h2>группа №${data.nameGroup}</h2></td>
-        <td colspan="30" width="52%" align="center" valign="bottom">Посещение занятий студентами с ${new Date(data.dateWriteFirst).toLocaleDateString('ru-RU')}. по ${new Date(data.dateWriteSecond).toLocaleDateString('ru-RU')}.</td>
+        <td colspan="30" width="52%" align="center" valign="bottom"><p>Посещение занятий студентами с ${new Date(data.dateWriteFirst).toLocaleDateString('ru-RU')}. по ${new Date(data.dateWriteSecond).toLocaleDateString('ru-RU')}.</p></td>
         <td colspan="2" align="center" width="18%"><h2>${new Date(data.dateWriteFirst).toLocaleDateString('ru-RU', options)}</h2></td>
         </tr>
         <tr>
-        <td class="border-top border-left">Дни недели</td>
-        <td align="center" colspan="5" width="10%" class="border-left border-right">Понедельник</td>
-        <td align="center" colspan="5" width="10%">Вторник</td>
-        <td align="center" colspan="5" width="10%">Среда</td>
-        <td align="center" colspan="5" width="10%">Четверг</td>
-        <td align="center" colspan="5" width="10%">Пятница</td>
-        <td align="center" colspan="5" width="10%">Суббота</td>
-        <td align="center" colspan="2">Всего пропусков</td>
+        <td class="border-top border-left"><p>Дни недели</p></td>
+        <td align="center" colspan="5" width="10%" class="border-left border-right"><p>Понедельник</p></td>
+        <td align="center" colspan="5" width="10%"><p>Вторник</p></td>
+        <td align="center" colspan="5" width="10%"><p>Среда</p></td>
+        <td align="center" colspan="5" width="10%"><p>Четверг</p></td>
+        <td align="center" colspan="5" width="10%"><p>Пятница</p></td>
+        <td align="center" colspan="5" width="10%"><p>Суббота</p></td>
+        <td align="center" colspan="2"><p>Всего пропусков</td>
         </tr>
         <tr id="data-zan">
+        <p>
         ${dateZanatya + afterDateZanyatya}
+        </p>
         <td colspan="2"></td>
         </tr>
         <tr>
-        <td height="150">Наименование дисциплины</td>
+        <td height="150"><p>Наименование дисциплины</p></td>
         <td></td>
         <td></td>
         <td></td>
@@ -591,27 +593,27 @@ app.route('/export')
         <td></td>
         <td></td>
         <td></td>
-        <td>По уважительным причинам (кол-во часов)</td>
-        <td>По неуважительным причинам (кол-во часов)</td>
+        <td><p>По уважительным причинам (кол-во часов)</p></td>
+        <td><p>По неуважительным причинам (кол-во часов)</p></td>
         </tr>
-           ${userDOCX}
+            <p> ${userDOCX} </p>
         <tr>
         
         </tr>
         </table>
         <table>
             <td align="center">
-                Куратор _________   ______________
+                <p>Куратор _________   ______________</p>
             </td>
             <td align="center">
-                Староста _________   ______________
+            <p>Староста _________   ______________</p>
             </td>
         </table>
         </body>
         </font>
         </html>`
         //console.log(userDOCX);
-        var content = htmlDocx.asBlob(DOCX, {orientation: 'landscape', margins: {left: 100, top: 100, right: 100}});
+        var content = htmlDocx.asBlob(DOCX, {orientation: 'landscape', margins: {left: 100, top: 100, right: 100}, font:'Times New Roman'});
         
         fs.writeFileSync("index.docx", content, (error, data) => {
             if(error) throw error;
@@ -631,9 +633,9 @@ async function setGroupStatus(s){
         where: {
             Name: pasport.group.realName
         }
-    }).then((result) => {
+    })//.then((result) => {
         //console.log(JSON.stringify(result));
-    });
+   // });
 }
 /* =============  ПОЛУЧЕНИЕ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ С УКАЗАННОЙ ГРУППОЙ ====================*/
 async function getUsersGroup(){
