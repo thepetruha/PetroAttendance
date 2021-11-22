@@ -3,8 +3,6 @@
     var data = JSON.stringify(users);
     send.addEventListener('click', event => {
         data = JSON.stringify(users);
-        console.log(data);
-
         fetch("http://" + document.location.host +'/update', {
             method: 'POST', 
             headers: {

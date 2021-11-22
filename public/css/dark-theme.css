@@ -15,3 +15,30 @@ body .container input{
 .container a.btn p{
     color: black;
 }
+
+input[type="date"], select {
+    background-color: #1f1f1f;
+    border: 1px solid white;
+}
+
+
+a.btn {
+    border: 1px solid white;
+    background: #1f1f1f;
+    color: white;
+}
+.container a.btn p, section#menu nav ul li a{
+
+    color: white;
+}
+
+.eye, .pencil, .repencil, .export{
+    opacity: 0;
+}
+
+
+section#update .button {
+    color: white;
+    border: 1px solid white;
+    background: #1f1f1f;
+}
