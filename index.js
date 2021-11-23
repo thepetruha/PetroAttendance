@@ -301,6 +301,7 @@ app.route('/export')
         var dates = {};
         var datenow;
         var dateArray = [];
+        var dateSortLast = [];
 
         var con=0;
 
@@ -318,15 +319,11 @@ app.route('/export')
             if(obj.dataValues.Date != datenow) {       
                 datenow = obj.dataValues.Date;
                 dateArray.push(datenow);
-               
                 dates[datenow] = {};
-                
-                
             }
-                dates[obj.dataValues.Date] = {};
-                
-            
+            dates[obj.dataValues.Date] = {};
         })
+
 //************************************************************************************************ */
 //console.log("======== DateArray ============");
 //console.log(dateArray);
@@ -334,19 +331,14 @@ app.route('/export')
         var arPopDate = [];
         for(var i = 0; i < dateArray.length; i++) { // 4 раза
             var d1 = new Date(dateArray[i]).getDate(); // d1 = день недели итерации
-            //console.log("=!!!========d1============");
-            //console.log(d1);
             if(dateArray[i-1]!= null){
                 var d2 = new Date(dateArray[i-1]).getDate(); // d2 = день недели - 1
             } else{
                 var d2 = new Date(dateArray[i]).getDate()-2; // d2 = день недели - 1
             }
             var s  = d1 - d2;
-            //console.log("=!!!========d2============");
-            //console.log(d2);
             var daynext;
             if(s > 2){
-
                 //если ласт ласт дата - первая дата 
                 //больше чем два дня то запускаем цыкл который отбавляет от последней даты дни 
                 for(var k = 1; k < s; k++){
@@ -354,11 +346,7 @@ app.route('/export')
                     daynext = new Date(dateArray[i]).setDate(daynext);
                     daynext = new Date(daynext).toISOString();
                     arPopDate.push(daynext.split("T")[0]);
-                    
                     dates[daynext.split("T")[0]] = {};
-                    
-                    
-                    
                 }
             //по сути тоже самое только для одного дня
             }else if(s > 1){
@@ -366,17 +354,28 @@ app.route('/export')
                 daynext = new Date(dateArray[i]).setDate(daynext);
                 daynext = new Date(daynext).toISOString();
                 arPopDate.push(daynext.split("T")[0]);
-                    
                 dates[daynext.split("T")[0]] = {}; 
-                
-                    
-                     
                 //dates[i] = {day: daynext.split("T")[0]};
             }
         }
 
-        console.log(arPopDate);
-        //dates.sort(function(a,b){return ;});
+        for(var key in dates) {
+            dateSortLast.push(key);
+        }
+        var sort_date = dateSortLast.sort(function(a, b) {
+            if (a > b) {
+                return 1;
+            }
+            if (a < b) {
+                return -1;
+            }
+            return 0;
+        })
+        console.log(sort_date);
+        dates = {};
+        sort_date.forEach(date => {
+            dates[date.toString()] = {};
+        })
 
         //здесь я пушу в отдельный массив ид пользователя 
         //чтобы исключить исключения
