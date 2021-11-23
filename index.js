@@ -528,9 +528,9 @@ app.route('/export')
                     arr_par.push(user_json[key].dateValues[key2][item])
 
                     params = user_json[key].dateValues[key2][item];
-                    if(params == 'H'){
+                    if(params == 'Н'){
                         count_H++;
-                    }else if(params == 'Y'){
+                    }else if(params == 'У'){
                         count_Y++;
                     }
                     i++;
