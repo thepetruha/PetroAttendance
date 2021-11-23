@@ -212,6 +212,7 @@ app.route('/show')
         }); 
     });
 });
+
 /* =============  ИМПОРТ НОВЫХ СТУДЕНТОВ ИЗ EXCEL ФАЙЛА ====================*/
 const urlencodedParser = express.urlencoded({extended: false});
 app.route('/import')
@@ -231,6 +232,7 @@ app.route('/import')
     if(!request.body) return response.sendStatus(400);
     response.send(`${request.body.groupName} - ${request.body.importFile}`);
 });
+
 /* =============  ЭКСПОРТ ПОСЕЩАЕМОСТИ В WORD ДОКУМЕНТ ====================*/
 app.route('/export')
 .get(isAunth, isStatus, async (req, res) => {
@@ -272,8 +274,11 @@ app.route('/export')
     })
     .then(async result => {
         var array = [];
-        var dates = {
+        var dates = {};
+        var datenow;
+        var dateArray = [];
 
+<<<<<<< HEAD
         };
         var ForceDateArray = [];
         const datesInputClient = [new Date(data.dateWriteFirst), new Date(data.dateWriteSecond)];
@@ -288,6 +293,12 @@ app.route('/export')
         }
 
         result.forEach((obj,index) => {          
+=======
+        //формирование нормального объекта json
+        result.forEach((obj, index) => {            
+        //console.log("=================OBJ USER FIRST NAME============" );
+        //console.log(obj.User.first_name);
+>>>>>>> 8ee20c4a18ef604f67a73e92bea53429eb2cebec
             array.push({
                 idUser: obj.User.id,
                 name: `${obj.User.first_name} ${obj.User.surname}`,
@@ -295,6 +306,7 @@ app.route('/export')
                 dataVal: obj.dataValues.value
             })
 
+<<<<<<< HEAD
             dates[obj.dataValues.Date] = {};
         });
 
@@ -322,15 +334,109 @@ app.route('/export')
             }
         }
     
+=======
+            if(obj.dataValues.Date !== datenow) {
+                datenow = obj.dataValues.Date;
+                dateArray.push(datenow)
+            }
+            dates[obj.dataValues.Date] = {};
+        })
+//************************************************************************************************ */
+//************************************************************************************************ */
+
+        //достает даты которых не хватает в бд
+        var arPopDate = [];
+        for(var i = 0; i < dateArray.length; i++) {
+            var d1 = new Date(dateArray[i]).getDate();
+            var d2 = new Date(dateArray[i-1]).getDate();
+            var s  = d1 - d2;
+
+            var daynext;
+            if(s > 2){
+                //если ласт ласт дата - первая дата 
+                //больше чем два дня то запускаем цыкл который отбавляет от последней даты дни 
+                for(var k = 1; k < s; k++){
+                    daynext = new Date(dateArray[i]).getDate() - k;
+                    daynext = new Date(dateArray[i]).setDate(daynext);
+                    daynext = new Date(daynext).toISOString();
+                    arPopDate.push(daynext.split("T")[0]);
+                }
+            //по сути тоже самое только для одного дня
+            }else if(s > 1){
+                daynext = new Date(dateArray[i]).getDate() - 1;
+                daynext = new Date(dateArray[i]).setDate(daynext);
+                daynext = new Date(daynext).toISOString();
+                arPopDate.push(daynext.split("T")[0]);
+            }
+        }
+
+        console.log(arPopDate);
+
+        //здесь я пушу в отдельный массив ид пользователя 
+        //чтобы исключить исключения
+        var us = [];
+        for(var f = 0; f < result.length; f++){
+            var obj = result[f];
+            us.push(obj.User.id);
+        }
+        //здесь как раз таки происходить фильтрация пользователей
+        var uniqueArray = us.filter(function(item, pos, self) {
+            return self.indexOf(item) == pos;
+        })
+        console.log(uniqueArray)
+        //result: [1, 2, 3, 4]
+
+        //здесь мы перебераем массив дат которых не достает
+        //и внутри перебераем массив юзеров который без повторения
+        //и подставляем f в массив result[f], которий вернула нам база
+        //и пушим значение в массив array
+        var r_id = '';
+        for (var i = 0; i < arPopDate.length; i++){
+            for(var f = 0; f < uniqueArray.length; f++){
+                var obj = result[f];
+                array.push({
+                    idUser: obj.User.id,
+                    name: `${obj.User.first_name} ${obj.User.surname}`,
+                    Date: arPopDate[i],
+                    dataVal: {}
+                })
+            }
+        }
+
+        
+
+
+
+        // array.push({
+        //     idUser: obj.User.id,
+        //     name: `${obj.User.first_name} ${obj.User.surname}`,
+        //     Date: obj.dataValues.Date,
+        //     dataVal: obj.dataValues.value
+        // })
+//************************************************************************************************ */
+//************************************************************************************************ */
+        
+        //console.log("======== DATES ================================");
+        //console.log(dates);
+        //сортировка пользователей по возрастанию
+>>>>>>> 8ee20c4a18ef604f67a73e92bea53429eb2cebec
         var s = array.sort(function(a, b) {
             if (a.idUser > b.idUser) {
                 return 1;
             }
             if (a.idUser < b.idUser) {
-            return -1;
+                return -1;
             }
-            return 0;
+                return 0;
         })
+<<<<<<< HEAD
+=======
+
+        console.log(s)
+        
+        //console.log("======== МАССИВ s ================================");
+        //console.log(s);
+>>>>>>> 8ee20c4a18ef604f67a73e92bea53429eb2cebec
 
         var user_json = {}; 
         //новый json для сортировки дат
@@ -371,6 +477,7 @@ app.route('/export')
 
     dateZanatya = `<td>Дата занятий</td>`+ beforeDateZanyatya;
 
+<<<<<<< HEAD
     s.forEach(obj=>{
         for(var i=0; i<check; i++){
             if (!countDays.includes(obj.Date)) {
@@ -390,6 +497,39 @@ app.route('/export')
                 continue;
             }
             iterate++;
+=======
+        dateZanatya = `<td>Дата занятий</td>`+ beforeDateZanyatya;
+//ааа
+        var iterate = 0;
+        var arr_date = {};
+        var check = lastDay-firstDay+1;
+        //console.log("=========CHECK============");
+       // console.log(check);
+        //console.log("===================obj===========");
+        //console.log(user_json);
+        s.forEach(obj => {
+            for(var key in user_json){
+                if(obj.idUser == key){
+                    arr_date[obj.Date] = obj.dataVal;
+                    
+                   // console.log("KEY");
+                   // console.log(arr_date[obj.Date] == obj.dataVal);
+                }else{
+                    //console.log(arr_date[obj.Date] == obj.dataVal);
+                    continue;
+                    
+                }
+                iterate++;
+
+                if(iterate == check){
+                    user_json[obj.idUser] = {
+                        name: obj.name,
+                        dateValues: arr_date
+                    }
+                    //console.log("======== ARR_DATE ================================");
+                    //console.log(user_json[key].dateValues)
+                     iterate = 0;
+>>>>>>> 8ee20c4a18ef604f67a73e92bea53429eb2cebec
 
             if(iterate == countDays.length){
                 user_json[obj.idUser] = {
@@ -401,9 +541,18 @@ app.route('/export')
                 arr_date = {}
                 break;
             }
+<<<<<<< HEAD
         }
     });
 
+=======
+        });
+
+//ааа
+
+        //console.log("======== USER_JSON ================================");
+        //console.log(user_json)
+>>>>>>> 8ee20c4a18ef604f67a73e92bea53429eb2cebec
         for(var key in user_json){
             var count_H = 0;
             var count_Y = 0;
