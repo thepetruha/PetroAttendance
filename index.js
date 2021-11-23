@@ -227,6 +227,7 @@ app.route('/show')
         }); 
     });
 });
+
 /* =============  ИМПОРТ НОВЫХ СТУДЕНТОВ ИЗ EXCEL ФАЙЛА ====================*/
 const urlencodedParser = express.urlencoded({extended: false});
 app.route('/import')
@@ -247,6 +248,7 @@ app.route('/import')
     //console.log(request.body);
     response.send(`${request.body.groupName} - ${request.body.importFile}`);
 });
+
 /* =============  ЭКСПОРТ ПОСЕЩАЕМОСТИ В WORD ДОКУМЕНТ ====================*/
 app.route('/export')
 .get(isAunth, isStatus, async (req, res) => {
@@ -296,12 +298,12 @@ app.route('/export')
         //console.log(JSON.stringify(result));    
         //console.log("__________________________________________________________________");
         var array = [];
-        var dates = {
+        var dates = {};
+        var datenow;
+        var dateArray = [];
 
-        };
         //формирование нормального объекта json
         result.forEach((obj, index) => {            
-            
         //console.log("=================OBJ USER FIRST NAME============" );
         //console.log(obj.User.first_name);
             array.push({
@@ -310,24 +312,102 @@ app.route('/export')
                 Date: obj.dataValues.Date,
                 dataVal: obj.dataValues.value
             })
-    
+
+            if(obj.dataValues.Date !== datenow) {
+                datenow = obj.dataValues.Date;
+                dateArray.push(datenow)
+            }
             dates[obj.dataValues.Date] = {};
-            
         })
+//************************************************************************************************ */
+//************************************************************************************************ */
+
+        //достает даты которых не хватает в бд
+        var arPopDate = [];
+        for(var i = 0; i < dateArray.length; i++) {
+            var d1 = new Date(dateArray[i]).getDate();
+            var d2 = new Date(dateArray[i-1]).getDate();
+            var s  = d1 - d2;
+
+            var daynext;
+            if(s > 2){
+                //если ласт ласт дата - первая дата 
+                //больше чем два дня то запускаем цыкл который отбавляет от последней даты дни 
+                for(var k = 1; k < s; k++){
+                    daynext = new Date(dateArray[i]).getDate() - k;
+                    daynext = new Date(dateArray[i]).setDate(daynext);
+                    daynext = new Date(daynext).toISOString();
+                    arPopDate.push(daynext.split("T")[0]);
+                }
+            //по сути тоже самое только для одного дня
+            }else if(s > 1){
+                daynext = new Date(dateArray[i]).getDate() - 1;
+                daynext = new Date(dateArray[i]).setDate(daynext);
+                daynext = new Date(daynext).toISOString();
+                arPopDate.push(daynext.split("T")[0]);
+            }
+        }
+
+        console.log(arPopDate);
+
+        //здесь я пушу в отдельный массив ид пользователя 
+        //чтобы исключить исключения
+        var us = [];
+        for(var f = 0; f < result.length; f++){
+            var obj = result[f];
+            us.push(obj.User.id);
+        }
+        //здесь как раз таки происходить фильтрация пользователей
+        var uniqueArray = us.filter(function(item, pos, self) {
+            return self.indexOf(item) == pos;
+        })
+        console.log(uniqueArray)
+        //result: [1, 2, 3, 4]
+
+        //здесь мы перебераем массив дат которых не достает
+        //и внутри перебераем массив юзеров который без повторения
+        //и подставляем f в массив result[f], которий вернула нам база
+        //и пушим значение в массив array
+        var r_id = '';
+        for (var i = 0; i < arPopDate.length; i++){
+            for(var f = 0; f < uniqueArray.length; f++){
+                var obj = result[f];
+                array.push({
+                    idUser: obj.User.id,
+                    name: `${obj.User.first_name} ${obj.User.surname}`,
+                    Date: arPopDate[i],
+                    dataVal: {}
+                })
+            }
+        }
+
+        
+
+
+
+        // array.push({
+        //     idUser: obj.User.id,
+        //     name: `${obj.User.first_name} ${obj.User.surname}`,
+        //     Date: obj.dataValues.Date,
+        //     dataVal: obj.dataValues.value
+        // })
+//************************************************************************************************ */
+//************************************************************************************************ */
         
         //console.log("======== DATES ================================");
         //console.log(dates);
         //сортировка пользователей по возрастанию
-        var s = array;
         var s = array.sort(function(a, b) {
             if (a.idUser > b.idUser) {
                 return 1;
             }
             if (a.idUser < b.idUser) {
-            return -1;
+                return -1;
             }
-            return 0;
+                return 0;
         })
+
+        console.log(s)
         
         //console.log("======== МАССИВ s ================================");
         //console.log(s);
@@ -374,22 +454,7 @@ app.route('/export')
 
 
         dateZanatya = `<td>Дата занятий</td>`+ beforeDateZanyatya;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//ааа
         var iterate = 0;
         var arr_date = {};
         var check = lastDay-firstDay+1;
@@ -427,21 +492,8 @@ app.route('/export')
             }
         });
 
+//ааа
 
-        
-
-
-
-
-
-
-
-
-
-
-
-
-        
         //console.log("======== USER_JSON ================================");
         //console.log(user_json)
         for(var key in user_json){
@@ -487,7 +539,6 @@ app.route('/export')
             
         }         
         
-        
         for (const key in dates) {
             dateZanatya+= `<td colspan="5" align="center" valign="center">`;
             dateZanatya+= new Date(key).toLocaleDateString("ru-RU");
@@ -495,7 +546,6 @@ app.route('/export')
             
         }
         
-
         var options = { month: 'long', year: 'numeric' };
         var DOCX = `<!DOCTYPE html>
         <html lang="en">
