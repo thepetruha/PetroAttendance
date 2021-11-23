@@ -395,11 +395,12 @@ app.route('/export')
         //и внутри перебераем массив юзеров который без повторения
         //и подставляем f в массив result[f], которий вернула нам база
         //и пушим значение в массив array
-        var r_id = '';
+        var ttArray = [];
         for (var i = 0; i < arPopDate.length; i++){
             for(var f = 0; f < uniqueArray.length; f++){
-                var obj = result[f];
-                array.push({
+                var obj = result[f]
+
+                ttArray.push({
                     idUser: obj.User.id,
                     name: `${obj.User.first_name} ${obj.User.surname}`,
                     Date: arPopDate[i],
@@ -408,11 +409,17 @@ app.route('/export')
             }
         }
 
+        console.log("========================= CONSOLE TT =====================");
+        console.log(ttArray)
+        console.log("===============================================");
+
 //************************************************************************************************ */
 //************************************************************************************************ */
         
         console.log("======== DATES ================================");
         console.log(dates);
+        console.log("===============================================");
+        // console.log(array)
         //сортировка пользователей по возрастанию
         var s = array.sort(function(a, b) {
             if (a.idUser > b.idUser) {
@@ -421,27 +428,51 @@ app.route('/export')
             if (a.idUser < b.idUser) {
                 return -1;
             }
-                return 0;
+            return 0;
         })
 
-        //console.log(s)
+//************************************************************************************************ */
+//************************************************************************************************ */
+
+        for(var key = 0; key < ttArray.length; key++) {
+            for(var user = 0; user < s.length; user++){
+                if(s[user].idUser == ttArray[key].idUser){
+                    var a_date1 = new Date(s[user].Date).getDate();
+                    var b_date2 = new Date(ttArray[key].Date).getDate();
+
+                    if(b_date2 < a_date1){
+                        console.log("INDEX:" + user);
+                        console.log(b_date2);
+                        s.splice(user, 0, {
+                            idUser:  ttArray[key].idUser,
+                            name:    ttArray[key].name,
+                            Date:    ttArray[key].Date,
+                            dataVal: ttArray[key].dataVal
+                        });
+                        break;
+                    }
+                }else{
+                    continue;
+                }
+            }
+        }
+
+        console.log(s)
+
+//************************************************************************************************ */
+//************************************************************************************************ */
+
+        // console.log(s)
         
         //console.log("======== МАССИВ s ================================");
         //console.log(s);
 
         var user_json = {}; 
         s.forEach(obj => {
-            user_json[obj.idUser] = {};
-            
-           
+            user_json[obj.idUser] = {};   
         })
         //console.log("========OBJ USER ================================");
         //console.log(user_json);
-
-
-
-
-
 
 
 /* ЗАПОЛНЯЕМ ПУСТЫЕ КЛЕТОЧКИ ДО И ПОСЛЕ Н-ОК*/
