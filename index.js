@@ -289,6 +289,7 @@ app.route('/export')
             }],
         })
             .then(async (attendance) => {
+                if(attendance.length == 0) return res.send({result: -1});
                 attendance = attendance.map(({ idUser, User, Date, value }) => {
                     return {
                         name: `${User.first_name} ${User.surname}`,
@@ -302,13 +303,16 @@ app.route('/export')
 
                 var groupAttendanceByDate = attendance => {
                     const groupedAttendance = {}
+                    if (attendance.rowCount == 0) {
+                        return {};
+                    }else{
+                        attendance.forEach(obj => {
+                            const group = groupedAttendance[obj.Date]
+                            group ? group.push(obj) : groupedAttendance[obj.Date] = [obj]
+                        })
 
-                    attendance.forEach(obj => {
-                        const group = groupedAttendance[obj.Date]
-                        group ? group.push(obj) : groupedAttendance[obj.Date] = [obj]
-                    })
-
-                    return groupedAttendance
+                        return groupedAttendance
+                    }
                 }
 
                 var getStartWeekDate = _date => {

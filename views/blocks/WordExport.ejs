@@ -49,6 +49,7 @@
         }).then(result => {
             result.json()
             .then((datas) => {
+                console.log(datas.result == -1 ? 'err': 'good')
                 console.log(datas)
                 let text = JSON.stringify(datas);
             })   
