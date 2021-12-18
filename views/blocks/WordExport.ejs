@@ -1,9 +1,12 @@
+<script src="../ejs.js"></script>
 <script>
     var dataJSON = {};
     var date1 = document.getElementById('date1');
     var date2 = document.getElementById('date2');
     var groupSelect = document.getElementById('GropSelect');
-    var popup = document.querySelector('.popup-bg');
+    var popup = document.querySelector('#pop1');
+    var popup2 = document.querySelector('#pop2');
+
 
     var documentName1 = date1.value;
     var documentName2 = date2.value;
@@ -11,6 +14,9 @@
     
     function closeopen(){
        popup.classList.toggle('show');
+    }
+    function closeopen2(){
+       popup2.classList.toggle('show');
     }
     
     date1.addEventListener('change', function(e){
@@ -26,8 +32,8 @@
         documentSelect = this.value;
     })
 
-    const { Document, Packer, Paragraph, Table, TableCell, TableRow, WidthType} = docx;
-    function generate() {
+    
+    async function generate() {
         dataJSON = {
             dateWriteFirst: documentName1,
             dateWriteSecond: documentName2,
@@ -37,21 +43,18 @@
         var tableRowArr = [];
         var jsDate = JSON.stringify(dataJSON);
         console.log(jsDate)
-        fetch('http://' + document.location.host + '/export', {
+        const result = await fetch('http://' + document.location.host + '/export', {
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json'
             }, 
             body: jsDate
-        }).then(result => {
-            result.json()
-            .then((datas) => {
-                console.log(datas.result == -1 ? 'err': 'good')
-                console.log(datas)
-                let text = JSON.stringify(datas);
-            })   
         })
+        const datas = await result.json();
+        (datas.result == -1) ? closeopen2() : closeopen()
+        console.log(datas)
+        let text = JSON.stringify(datas);
 
-        closeopen();
+        // closeopen();
     }
 </script>

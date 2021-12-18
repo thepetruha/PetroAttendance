@@ -17,11 +17,19 @@
         </div>
     </header>
     <% let activeForm = false %>
-    <div class="popup-bg">
+
+    <div class="popup-bg" id="pop1">
         <div class="popup">
             <div class="close" onclick="closeopen();">X</div>
-            <h2>Посещаемость успешно экспортирована!</h2>
-            <a href="/download" class="btn"><div class="export"></div><p>Скачать</p></a>
+                <h2>Посещаемость успешно экспортирована!</h2>
+                <a href="/download" class="btn"><div class="export"></div><p>Скачать</p></a>
+        </div>
+    </div>
+
+    <div class="popup-bg" id="pop2">
+        <div class="popup">
+            <div class="close" onclick="closeopen2();">X</div>
+                <h2>Посещаемость не найдена!</h2>
         </div>
     </div>
 

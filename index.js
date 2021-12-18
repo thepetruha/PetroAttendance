@@ -4,6 +4,7 @@ const { Op } = require("sequelize");
 const login = require('./MeModule/LoginIn');
 const exp = require('./MeModule/ExportFile.js');
 const express = require('express');
+const cron = require('node-cron')
 const cookieParser = require('cookie-parser');
 const htmlDocx = require('html-docx-js');
 const jwt = require('jsonwebtoken');
@@ -289,7 +290,7 @@ app.route('/export')
             }],
         })
             .then(async (attendance) => {
-                if(attendance.length == 0) return res.send({result: -1});
+                if (attendance.length == 0) return res.send({ result: -1 });
                 attendance = attendance.map(({ idUser, User, Date, value }) => {
                     return {
                         name: `${User.first_name} ${User.surname}`,
@@ -305,7 +306,7 @@ app.route('/export')
                     const groupedAttendance = {}
                     if (attendance.rowCount == 0) {
                         return {};
-                    }else{
+                    } else {
                         attendance.forEach(obj => {
                             const group = groupedAttendance[obj.Date]
                             group ? group.push(obj) : groupedAttendance[obj.Date] = [obj]
@@ -374,8 +375,9 @@ app.route('/export')
                 console.log(s)
                 console.log(user_json)
 
-                var firstDay = new Date(data.dateWriteFirst).getDay();
-                var lastDay = new Date(data.dateWriteSecond).getDay();
+                var firstDay = startWeekDate.getDate();
+                var lastDay = addDays(startWeekDate, 5).getDate();
+                console.log(firstDay, lastDay) 
 
                 var iterate = 0;
                 var arr_date = {};
@@ -549,6 +551,7 @@ app.route('/export')
                 fs.writeFileSync("index.docx", content, (error, data) => {
                     if (error) throw error;
                 })
+                if (attendance.length > 0) return res.send({ result: 1 });
             })
             .catch(err => console.log(err))
     })
@@ -597,11 +600,16 @@ async function getIsDate() {
 
     return isDate;
 }
-//---------------------------------------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
 /* =============  ЗАПУСК СЕРВЕРА ====================*/
 sequelize.sync({})
     .then(() => {
         app.listen(port, () => {
             console.log(`Start server: ${port}`);
+            cron.schedule("0 0 * * *", async () => {
+                await Groups.update({ Status: 0 }, { where: { Status: 1 } })
+                console.log("KEK")
+            });
         });
     });
