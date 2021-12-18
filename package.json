@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index" 
   },
   "author": "Kucher & Krivoschekov",
   "license": "ISC",
@@ -16,6 +16,7 @@
     "html-docx-js": "^0.3.1",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.0",
+    "nodemon": "^2.0.15",
     "sequelize": "^6.6.5"
   }
 }
