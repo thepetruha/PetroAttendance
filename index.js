@@ -273,6 +273,7 @@ app.route('/export')
 
         await Attendance.findAll({
             where: {
+<<<<<<< HEAD
                 Date: {
                     [Op.between]: [data.dateWriteFirst, data.dateWriteSecond],
                 },
@@ -287,6 +288,106 @@ app.route('/export')
                     group: +data.groupSelect
                 }
             }],
+=======
+                group: +data.groupSelect
+            }
+        }]
+    })
+    .then(async result => {
+        //console.log("======== КАКОЙ ПРИХОДИТ РЕЗУЛЬТАТ ================================");
+        //console.log(JSON.stringify(result));    
+        //console.log("__________________________________________________________________");
+        var array = [];
+        var dates = {};
+        var datenow;
+        var dateArray = [];
+        var dateSortLast = [];
+
+        var con=0;
+
+        //формирование нормального объекта json
+        result.forEach((obj, index) => {            
+        //console.log("=================OBJ USER FIRST NAME============" );
+        //console.log(obj.User.first_name);
+            array.push({
+                idUser: obj.User.id,
+                name: `${obj.User.first_name} ${obj.User.surname}`,
+                Date: obj.dataValues.Date,
+                dataVal: obj.dataValues.value
+            })
+            
+            if(obj.dataValues.Date != datenow) {       
+                datenow = obj.dataValues.Date;
+                dateArray.push(datenow);
+                dates[datenow] = {};
+            }
+            dates[obj.dataValues.Date] = {};
+        })
+
+//************************************************************************************************ */
+//console.log("======== DateArray ============");
+//console.log(dateArray);
+        //достает даты которых не хватает в бд
+        var arPopDate = [];
+        for(var i = 0; i < dateArray.length; i++) { // 4 раза
+            var d1 = new Date(dateArray[i]).getDate(); // d1 = день недели итерации
+            if(dateArray[i-1]!= null){
+                var d2 = new Date(dateArray[i-1]).getDate(); // d2 = день недели - 1
+            } else{
+                var d2 = new Date(dateArray[i]).getDate()-2; // d2 = день недели - 1
+            }
+            var s  = d1 - d2;
+            var daynext;
+            if(s > 2){
+                //если ласт ласт дата - первая дата 
+                //больше чем два дня то запускаем цыкл который отбавляет от последней даты дни 
+                for(var k = 1; k < s; k++){
+                    daynext = new Date(dateArray[i]).getDate() - k;
+                    daynext = new Date(dateArray[i]).setDate(daynext);
+                    daynext = new Date(daynext).toISOString();
+                    arPopDate.push(daynext.split("T")[0]);
+                    dates[daynext.split("T")[0]] = {};
+                }
+            //по сути тоже самое только для одного дня
+            }else if(s > 1){
+                daynext = new Date(dateArray[i]).getDate() - 1;
+                daynext = new Date(dateArray[i]).setDate(daynext);
+                daynext = new Date(daynext).toISOString();
+                arPopDate.push(daynext.split("T")[0]);
+                dates[daynext.split("T")[0]] = {}; 
+                //dates[i] = {day: daynext.split("T")[0]};
+            }
+        }
+
+        for(var key in dates) {
+            dateSortLast.push(key);
+        }
+        var sort_date = dateSortLast.sort(function(a, b) {
+            if (a > b) {
+                return 1;
+            }
+            if (a < b) {
+                return -1;
+            }
+            return 0;
+        })
+        console.log(sort_date);
+        dates = {};
+        sort_date.forEach(date => {
+            dates[date.toString()] = {};
+        })
+
+        //здесь я пушу в отдельный массив ид пользователя 
+        //чтобы исключить исключения
+        var us = [];
+        for(var f = 0; f < result.length; f++){
+            var obj = result[f];
+            us.push(obj.User.id);
+        }
+        //здесь как раз таки происходить фильтрация пользователей
+        var uniqueArray = us.filter(function(item, pos, self) {
+            return self.indexOf(item) == pos;
+>>>>>>> b506d6f17ebebd571254684a3c28e37231dd1ff1
         })
             .then(async (attendance) => {
                 attendance = attendance.map(({ idUser, User, Date, value }) => {
@@ -358,6 +459,7 @@ app.route('/export')
                     }
                 }
 
+<<<<<<< HEAD
                 const s = Object.entries(groupedAttendance)
                     .map(([, array]) => array)
                     .flat()
@@ -394,6 +496,31 @@ app.route('/export')
                             arr_date = {}
                             break;
                         }
+=======
+//ааа
+
+        //console.log("======== USER_JSON ================================");
+        //console.log(user_json)
+        for(var key in user_json){
+            var count_H = 0;
+            var count_Y = 0;
+            var arr_par = [];
+            var params;
+            valDOCX = '';
+            //console.log("============USER JSON KEY==========");
+            //console.log(user_json[key]);
+            for(var key2 in user_json[key].dateValues){
+                var i = 0;
+                
+                for(var item in user_json[key].dateValues[key2]){
+                    arr_par.push(user_json[key].dateValues[key2][item])
+
+                    params = user_json[key].dateValues[key2][item];
+                    if(params == 'Н'){
+                        count_H++;
+                    }else if(params == 'У'){
+                        count_Y++;
+>>>>>>> b506d6f17ebebd571254684a3c28e37231dd1ff1
                     }
                 });
 
